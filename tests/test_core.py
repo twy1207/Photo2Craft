@@ -13,7 +13,7 @@ def fixture():
                          material="white_concrete", roof=dict(kind="gable", rise=.5,
                          ridge_axis="z", material="deepslate_tiles"), evidence="fixture", inferred=False),
                     dict(id="step", parent="body", offset=[.25, 0, -.1], size=[.5, .1, .1],
-                         shell=False, material="stone_bricks", roof=dict(kind="none", rise=0,
+                         shell=False, material="stone_bricks", roof=dict(kind="flat", rise=0,
                          ridge_axis="z", material="stone_bricks"), evidence="fixture", inferred=False)],
                 details=[dict(id="window", volume="body", face="front", u=.25, v=.3,
                               width=.5, height=.4, material="glass", frame=None,

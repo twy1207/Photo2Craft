@@ -1,0 +1,14 @@
+{
+  "extent": 48,
+  "plan_sha256": "1cbc86250e8cfc2e75b84da5d993ee303904e516a51dd2fc417af58d093953bf",
+  "photo_sha256": "540b5c587da831f79b2eee1e46d98e035cee475267d13897ba9c4df616650011",
+  "source_sha256": {
+    "model.py": "34bb7a7a5dc955a8bf1a336675ad5d954be6f65207bdbbbb40511d0b01aae179",
+    "compile.py": "fb0ff866e00f66df8cf07f60763e4e596befe3cacb7c759c8655ed3575773e8f",
+    "render.py": "9565319d82b82317a857bea0a38e1b653142f5f6ecfdf999a4a8ecafc3435316"
+  },
+  "dependencies": {
+    "Pillow": "13.0.0",
+    "pydantic": "2.14.3"
+  }
+}

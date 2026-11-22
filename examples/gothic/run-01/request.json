@@ -1,0 +1,279 @@
+{
+  "model_requested": "gemini-3.8-flash",
+  "started_utc": "2026-11-22T12:34:41.424721+00:00",
+  "source_photo_sha256": "1d609963e882df55ce9f527782b240f8da03f905ad01428fab00094f3dadbbad",
+  "sent_photo_sha256": "540b5c587da831f79b2eee1e46d98e035cee475267d13897ba9c4df616650011",
+  "prompt_sha256": "00e770ce0662cc11622e502d4e2c096bd6363e78b16876314b72e34fbc3dd3a8",
+  "generation_config": {
+    "responseMimeType": "application/json",
+    "responseSchema": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "view": {
+          "type": "string",
+          "enum": [
+            "front",
+            "front_left",
+            "front_right"
+          ]
+        },
+        "suitability": {
+          "type": "string",
+          "enum": [
+            "supported",
+            "approximate",
+            "unsupported"
+          ]
+        },
+        "observations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "type": "string"
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string"
+          }
+        },
+        "volumes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 24,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "parent": {
+                "type": "string",
+                "nullable": true
+              },
+              "offset": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "size": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "shell": {
+                "type": "boolean"
+              },
+              "material": {
+                "type": "string",
+                "enum": [
+                  "white_concrete",
+                  "light_gray_concrete",
+                  "gray_concrete",
+                  "black_concrete",
+                  "red_concrete",
+                  "yellow_concrete",
+                  "bricks",
+                  "stone_bricks",
+                  "sandstone",
+                  "oak_planks",
+                  "dark_oak_planks",
+                  "deepslate_tiles",
+                  "glass"
+                ]
+              },
+              "roof": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "flat",
+                      "gable"
+                    ]
+                  },
+                  "rise": {
+                    "type": "number"
+                  },
+                  "ridge_axis": {
+                    "type": "string",
+                    "enum": [
+                      "x",
+                      "z"
+                    ]
+                  },
+                  "material": {
+                    "type": "string",
+                    "enum": [
+                      "white_concrete",
+                      "light_gray_concrete",
+                      "gray_concrete",
+                      "black_concrete",
+                      "red_concrete",
+                      "yellow_concrete",
+                      "bricks",
+                      "stone_bricks",
+                      "sandstone",
+                      "oak_planks",
+                      "dark_oak_planks",
+                      "deepslate_tiles",
+                      "glass"
+                    ]
+                  }
+                },
+                "required": [
+                  "kind",
+                  "rise",
+                  "ridge_axis",
+                  "material"
+                ]
+              },
+              "evidence": {
+                "type": "string"
+              },
+              "inferred": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "parent",
+              "offset",
+              "size",
+              "shell",
+              "material",
+              "roof",
+              "evidence",
+              "inferred"
+            ]
+          }
+        },
+        "details": {
+          "type": "array",
+          "maxItems": 60,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "volume": {
+                "type": "string"
+              },
+              "face": {
+                "type": "string",
+                "enum": [
+                  "front",
+                  "back",
+                  "left",
+                  "right"
+                ]
+              },
+              "u": {
+                "type": "number"
+              },
+              "v": {
+                "type": "number"
+              },
+              "width": {
+                "type": "number"
+              },
+              "height": {
+                "type": "number"
+              },
+              "material": {
+                "type": "string",
+                "enum": [
+                  "white_concrete",
+                  "light_gray_concrete",
+                  "gray_concrete",
+                  "black_concrete",
+                  "red_concrete",
+                  "yellow_concrete",
+                  "bricks",
+                  "stone_bricks",
+                  "sandstone",
+                  "oak_planks",
+                  "dark_oak_planks",
+                  "deepslate_tiles",
+                  "glass"
+                ]
+              },
+              "frame": {
+                "type": "string",
+                "enum": [
+                  "white_concrete",
+                  "light_gray_concrete",
+                  "gray_concrete",
+                  "black_concrete",
+                  "red_concrete",
+                  "yellow_concrete",
+                  "bricks",
+                  "stone_bricks",
+                  "sandstone",
+                  "oak_planks",
+                  "dark_oak_planks",
+                  "deepslate_tiles",
+                  "glass"
+                ],
+                "nullable": true
+              },
+              "evidence": {
+                "type": "string"
+              },
+              "inferred": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "volume",
+              "face",
+              "u",
+              "v",
+              "width",
+              "height",
+              "material",
+              "frame",
+              "evidence",
+              "inferred"
+            ]
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "title",
+        "view",
+        "suitability",
+        "observations",
+        "assumptions",
+        "volumes",
+        "details"
+      ]
+    },
+    "temperature": 0.2,
+    "maxOutputTokens": 12000
+  },
+  "requirements": "",
+  "retries": 0,
+  "status": "http_error",
+  "http_status": 503,
+  "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later."
+}

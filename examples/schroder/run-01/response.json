@@ -1,0 +1,35 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "{\n  \"schema_version\": 1,\n  \"title\": \"Modernist Villa with Asymmetric Volumes and Balconies\",\n  \"view\": \"front_left\",\n  \"suitability\": \"supported\",\n  \"observations\": [\n    \"The main facade faces the camera and slightly to the left, showing the asymmetrical arrangement of gray concrete and white concrete volumes.\",\n    \"Prominent features include a tall vertical white wall section, a cantilevered white balcony panel, yellow support column on the left, and flat roofs.\"\n  ],\n  \"assumptions\": [\n    \"The depth of the building is assumed to be roughly equal to the main facade width for simple completion.\",\n    \"Rear and side walls follow the same concrete palette and window styling as the visible facade.\"\n  ],\n  \"volumes\": [\n    {\n      \"id\": \"main_body\",\n      \"parent\": null,\n      \"offset\": [\n        0,\n        0,\n        0\n      ],\n      \"size\": [\n        1,\n        1,\n        0.8\n      ],\n      \"shell\": true,\n      \"material\": \"light_gray_concrete\",\n      \"roof\": {\n        \"kind\": \"flat\",\n        \"rise\": 0.05,\n        \"ridge_axis\": \"z\",\n        \"material\": \"light_gray_concrete\"\n      },\n      \"evidence\": \"Main multi-level box structure of the modernist house in light gray concrete.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"central_white_wall\",\n      \"parent\": \"main_body\",\n      \"offset\": [\n        0.45,\n        0,\n        -0.05\n      ],\n      \"size\": [\n        0.15,\n        1.1,\n        0.1\n      ],\n      \"shell\": false,\n      \"material\": \"white_concrete\",\n      \"roof\": {\n        \"kind\": \"flat\",\n        \"rise\": 0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"white_concrete\"\n      },\n      \"evidence\": \"Tall vertical white concrete slab dividing the facade.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"balcony_box\",\n      \"parent\": \"main_body\",\n      \"offset\": [\n        0.2,\n        0.35,\n        -0.1\n      ],\n      \"size\": [\n        0.3,\n        0.3,\n        0.15\n      ],\n      \"shell\": false,\n      \"material\": \"white_concrete\",\n      \"roof\": {\n        \"kind\": \"flat\",\n        \"rise\": 0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"white_concrete\"\n      },\n      \"evidence\": \"Projecting white cantilevered volume on the left side of the facade.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"roof_canopy_right\",\n      \"parent\": \"main_body\",\n      \"offset\": [\n        0.55,\n        0.85,\n        -0.1\n      ],\n      \"size\": [\n        0.4,\n        0.08,\n        0.5\n      ],\n      \"shell\": false,\n      \"material\": \"white_concrete\",\n      \"roof\": {\n        \"kind\": \"flat\",\n        \"rise\": 0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"white_concrete\"\n      },\n      \"evidence\": \"Overhanging flat roof canopy on the right upper terrace.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"yellow_column\",\n      \"parent\": \"main_body\",\n      \"offset\": [\n        0.05,\n        0,\n        -0.15\n      ],\n      \"size\": [\n        0.05,\n        0.9,\n        0.05\n      ],\n      \"shell\": false,\n      \"material\": \"yellow_concrete\",\n      \"roof\": {\n        \"kind\": \"none\",\n        \"rise\": 0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"yellow_concrete\"\n      },\n      \"evidence\": \"Bright yellow vertical structural column supporting the left porch overhang.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"red_accent_beam\",\n      \"parent\": \"main_body\",\n      \"offset\": [\n        0.58,\n        0.65,\n        0.05\n      ],\n      \"size\": [\n        0.25,\n        0.04,\n        0.05\n      ],\n      \"shell\": false,\n      \"material\": \"red_concrete\",\n      \"roof\": {\n        \"kind\": \"none\",\n        \"rise\": 0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"red_concrete\"\n      },\n      \"evidence\": \"Red horizontal structural beam visible under the right upper terrace.\",\n      \"inferred\": false\n    }\n  ],\n  \"details\": [\n    {\n      \"id\": \"upper_window\",\n      \"volume\": \"main_body\",\n      \"face\": \"front\",\n      \"u\": 0.35,\n      \"v\": 0.55,\n      \"width\": 0.15,\n      \"height\": 0.25,\n      \"material\": \"glass\",\n      \"frame\": \"black_concrete\",\n      \"evidence\": \"Large multi-pane window on the upper central facade.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"ground_window_left\",\n      \"volume\": \"main_body\",\n      \"face\": \"front\",\n      \"u\": 0.05,\n      \"v\": 0.1,\n      \"width\": 0.2,\n      \"height\": 0.3,\n      \"material\": \"glass\",\n      \"frame\": \"black_concrete\",\n      \"evidence\": \"Large ground floor windows on the left side.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"ground_window_right\",\n      \"volume\": \"main_body\",\n      \"face\": \"front\",\n      \"u\": 0.6,\n      \"v\": 0.1,\n      \"width\": 0.3,\n      \"height\": 0.2,\n      \"material\": \"glass\",\n      \"frame\": \"black_concrete\",\n      \"evidence\": \"Strip windows on the ground floor right.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"terrace_glass\",\n      \"volume\": \"main_body\",\n      \"face\": \"front\",\n      \"u\": 0.58,\n      \"v\": 0.65,\n      \"width\": 0.25,\n      \"height\": 0.2,\n      \"material\": \"glass\",\n      \"frame\": \"black_concrete\",\n      \"evidence\": \"Glass enclosure of the upper right terrace.\",\n      \"inferred\": false\n    }\n  ]\n}",
+            "thoughtSignature": "Eo4BCosBAWkUfRPtS/10AE397VWNYkktS/4Qsg8ZvZGKOpk11LZzXsMuyz8I1ObYAn3txVbS2OOMzKh7z1wae47OO3A/8VOq6Iwjq3+oxxEP/JxCyxU6dPC6e3eL5zWsuwCbLhRUe/Oo1lUKWb4ujlnZKD7hJgu+clHJpKhEs2xu0681r/Zc6Xc8jerHSyPknw=="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 2096,
+    "candidatesTokenCount": 1667,
+    "totalTokenCount": 3763,
+    "promptTokensDetails": [
+      {
+        "modality": "IMAGE",
+        "tokenCount": 1064
+      },
+      {
+        "modality": "TEXT",
+        "tokenCount": 1032
+      }
+    ],
+    "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "xeECa8fWKpW2vr0Ppunx2Qs"
+}

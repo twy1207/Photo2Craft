@@ -1,0 +1,35 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "{\n  \"schema_version\": 1,\n  \"title\": \"White wooden cottage with front porch and pointed gable window\",\n  \"view\": \"front_right\",\n  \"suitability\": \"supported\",\n  \"observations\": [\n    \"The main building features vertical white siding and a gable roof with the ridge running front-to-back relative to the extended length, making the primary gabled facade face the front.\",\n    \"A covered porch extends along the front with slender white support posts and a shallow roof.\",\n    \"A distinctive arched gothic-style window is centered in the upper gable.\",\n    \"A pair of rectangular windows is located on the ground floor of the front facade.\"\n  ],\n  \"assumptions\": [\n    \"The rear depth and back wall structure are symmetrical to the front porch length.\",\n    \"Internal room layouts are inferred based on exterior window positions.\"\n  ],\n  \"volumes\": [\n    {\n      \"id\": \"main_body\",\n      \"parent\": null,\n      \"offset\": [\n        0,\n        0,\n        0\n      ],\n      \"size\": [\n        1,\n        0.75,\n        1.2\n      ],\n      \"shell\": true,\n      \"material\": \"white_concrete\",\n      \"roof\": {\n        \"kind\": \"gable\",\n        \"rise\": 0.6,\n        \"ridge_axis\": \"z\",\n        \"material\": \"deepslate_tiles\"\n      },\n      \"evidence\": \"Main white rectangular body with visible gable roof.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"front_porch_roof\",\n      \"parent\": \"main_body\",\n      \"offset\": [\n        -0.05,\n        0.5,\n        -0.35\n      ],\n      \"size\": [\n        1.1,\n        0.1,\n        0.4\n      ],\n      \"shell\": false,\n      \"material\": \"deepslate_tiles\",\n      \"roof\": {\n        \"kind\": \"flat\",\n        \"rise\": 0.05,\n        \"ridge_axis\": \"z\",\n        \"material\": \"deepslate_tiles\"\n      },\n      \"evidence\": \"Shallow porch roof extending over the front deck.\",\n      \"inferred\": false\n    }\n  ],\n  \"details\": [\n    {\n      \"id\": \"gothic_window\",\n      \"volume\": \"main_body\",\n      \"face\": \"front\",\n      \"u\": 0.38,\n      \"v\": 0.8,\n      \"width\": 0.24,\n      \"height\": 0.35,\n      \"material\": \"glass\",\n      \"frame\": \"white_concrete\",\n      \"evidence\": \"Pointed arched window in the front gable peak.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"front_windows\",\n      \"volume\": \"main_body\",\n      \"face\": \"front\",\n      \"u\": 0.35,\n      \"v\": 0.25,\n      \"width\": 0.3,\n      \"height\": 0.4,\n      \"material\": \"glass\",\n      \"frame\": \"white_concrete\",\n      \"evidence\": \"Pair of rectangular double-hung windows on the main front floor.\",\n      \"inferred\": false\n    }\n  ]\n}",
+            "thoughtSignature": "Eo4BCosBAWkUfRO1Tbr8JXb9kQ+PP5Fc/n8sqe2RP7TQkZnSt93nfsX7z7w+wpZSXsVdYhy16qNOXueXDZ1DfQYOX2XGP8LPUFh4PJ0OgViFtEGxFRzxtx6rCIaq8nZzm3ekNmkvwCsKUO7X+euki4e6gHLyq6t72n63dc0vcPqnIKV+L4JV4Bfj48yfXKZFvQ=="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 2096,
+    "candidatesTokenCount": 783,
+    "totalTokenCount": 2879,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1032
+      },
+      {
+        "modality": "IMAGE",
+        "tokenCount": 1064
+      }
+    ],
+    "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "q-ECa7r_EJar0-kP5IP04A4"
+}

@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "title": "Modernist Villa with Asymmetric Volumes and Balconies",
+  "view": "front_left",
+  "suitability": "supported",
+  "observations": [
+    "The main facade faces the camera and slightly to the left, showing the asymmetrical arrangement of gray concrete and white concrete volumes.",
+    "Prominent features include a tall vertical white wall section, a cantilevered white balcony panel, yellow support column on the left, and flat roofs."
+  ],
+  "assumptions": [
+    "The depth of the building is assumed to be roughly equal to the main facade width for simple completion.",
+    "Rear and side walls follow the same concrete palette and window styling as the visible facade."
+  ],
+  "volumes": [
+    {
+      "id": "main_body",
+      "parent": null,
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size": [
+        1.0,
+        1.0,
+        0.8
+      ],
+      "shell": true,
+      "material": "light_gray_concrete",
+      "roof": {
+        "kind": "flat",
+        "rise": 0.05,
+        "ridge_axis": "z",
+        "material": "light_gray_concrete"
+      },
+      "evidence": "Main multi-level box structure of the modernist house in light gray concrete.",
+      "inferred": false
+    },
+    {
+      "id": "central_white_wall",
+      "parent": "main_body",
+      "offset": [
+        0.45,
+        0.0,
+        -0.05
+      ],
+      "size": [
+        0.15,
+        1.1,
+        0.1
+      ],
+      "shell": false,
+      "material": "white_concrete",
+      "roof": {
+        "kind": "flat",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "white_concrete"
+      },
+      "evidence": "Tall vertical white concrete slab dividing the facade.",
+      "inferred": false
+    },
+    {
+      "id": "balcony_box",
+      "parent": "main_body",
+      "offset": [
+        0.2,
+        0.35,
+        -0.1
+      ],
+      "size": [
+        0.3,
+        0.3,
+        0.15
+      ],
+      "shell": false,
+      "material": "white_concrete",
+      "roof": {
+        "kind": "flat",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "white_concrete"
+      },
+      "evidence": "Projecting white cantilevered volume on the left side of the facade.",
+      "inferred": false
+    },
+    {
+      "id": "roof_canopy_right",
+      "parent": "main_body",
+      "offset": [
+        0.55,
+        0.85,
+        -0.1
+      ],
+      "size": [
+        0.4,
+        0.08,
+        0.5
+      ],
+      "shell": false,
+      "material": "white_concrete",
+      "roof": {
+        "kind": "flat",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "white_concrete"
+      },
+      "evidence": "Overhanging flat roof canopy on the right upper terrace.",
+      "inferred": false
+    },
+    {
+      "id": "yellow_column",
+      "parent": "main_body",
+      "offset": [
+        0.05,
+        0.0,
+        -0.15
+      ],
+      "size": [
+        0.05,
+        0.9,
+        0.05
+      ],
+      "shell": false,
+      "material": "yellow_concrete",
+      "roof": {
+        "kind": "none",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "yellow_concrete"
+      },
+      "evidence": "Bright yellow vertical structural column supporting the left porch overhang.",
+      "inferred": false
+    },
+    {
+      "id": "red_accent_beam",
+      "parent": "main_body",
+      "offset": [
+        0.58,
+        0.65,
+        0.05
+      ],
+      "size": [
+        0.25,
+        0.04,
+        0.05
+      ],
+      "shell": false,
+      "material": "red_concrete",
+      "roof": {
+        "kind": "none",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "red_concrete"
+      },
+      "evidence": "Red horizontal structural beam visible under the right upper terrace.",
+      "inferred": false
+    }
+  ],
+  "details": [
+    {
+      "id": "upper_window",
+      "volume": "main_body",
+      "face": "front",
+      "u": 0.35,
+      "v": 0.55,
+      "width": 0.15,
+      "height": 0.25,
+      "material": "glass",
+      "frame": "black_concrete",
+      "evidence": "Large multi-pane window on the upper central facade.",
+      "inferred": false
+    },
+    {
+      "id": "ground_window_left",
+      "volume": "main_body",
+      "face": "front",
+      "u": 0.05,
+      "v": 0.1,
+      "width": 0.2,
+      "height": 0.3,
+      "material": "glass",
+      "frame": "black_concrete",
+      "evidence": "Large ground floor windows on the left side.",
+      "inferred": false
+    },
+    {
+      "id": "ground_window_right",
+      "volume": "main_body",
+      "face": "front",
+      "u": 0.6,
+      "v": 0.1,
+      "width": 0.3,
+      "height": 0.2,
+      "material": "glass",
+      "frame": "black_concrete",
+      "evidence": "Strip windows on the ground floor right.",
+      "inferred": false
+    },
+    {
+      "id": "terrace_glass",
+      "volume": "main_body",
+      "face": "front",
+      "u": 0.58,
+      "v": 0.65,
+      "width": 0.25,
+      "height": 0.2,
+      "material": "glass",
+      "frame": "black_concrete",
+      "evidence": "Glass enclosure of the upper right terrace.",
+      "inferred": false
+    }
+  ]
+}

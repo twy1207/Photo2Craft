@@ -54,19 +54,20 @@ def render(build: Build, yaw: float, elevation: float, size=(680, 520)) -> Image
     return im.resize(size, Image.Resampling.LANCZOS)
 
 
-def write_comparison(build: Build, photo: Path | None, destination: Path):
+def write_comparison(build: Build, photo: Path | None, destination: Path, view="front_right"):
     sheet = Image.new("RGB", (1440, 1080), "#ffffff")
     draw = ImageDraw.Draw(sheet)
     font = ImageFont.load_default(size=20)
-    slots = ((20, 20, "INPUT PHOTO" if photo else "SYNTHETIC PLAN / FRONT + LEFT"), (740, 20, "FRONT + RIGHT (orthographic)"),
-             (20, 550, "FRONT (orthographic)"), (740, 550, "BACK + LEFT (inferred areas)"))
+    yaw = {"front": 0, "front_left": -35, "front_right": 35}[view]
+    slots = ((20, 20, "INPUT PHOTO" if photo else "SYNTHETIC PLAN / FRONT + LEFT"), (740, 20, view.upper().replace('_', ' + ') + " (orthographic)"),
+             (20, 550, "FRONT (orthographic)"), (740, 550, "OPPOSITE VIEW (inferred areas)"))
     if photo:
         with Image.open(photo) as source:
             first = ImageOps.contain(ImageOps.exif_transpose(source).convert("RGB"), (680, 480))
     else:
         first = render(build, -40, 22, (680, 480))
-    pictures = (first, render(build, 35, 22, (680, 480)),
-                render(build, 0, 0, (680, 480)), render(build, 215, 22, (680, 480)))
+    pictures = (first, render(build, yaw, 18, (680, 480)),
+                render(build, 0, 0, (680, 480)), render(build, yaw+180, 22, (680, 480)))
     for (x, y, title), picture in zip(slots, pictures):
         draw.text((x, y), title, fill="#273844", font=font)
         sheet.paste(picture, (x+(680-picture.width)//2, y+32+(480-picture.height)//2))

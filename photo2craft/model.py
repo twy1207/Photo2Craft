@@ -27,8 +27,8 @@ class Roof(Model):
 
     @model_validator(mode="after")
     def check_rise(self):
-        if self.kind != "none" and self.rise <= 0:
-            raise ValueError("a roof needs a positive rise relative to its body's height")
+        if self.kind == "gable" and self.rise <= 0:
+            raise ValueError("a gable needs a positive rise relative to its body's height")
         return self
 
 
@@ -68,6 +68,7 @@ class SurfaceDetail(Model):
 class Plan(Model):
     schema_version: Literal[1]
     title: Annotated[str, Field(min_length=1, max_length=160)]
+    view: Literal["front", "front_left", "front_right"] = "front_right"
     suitability: Literal["supported", "approximate", "unsupported"]
     observations: Annotated[list[str], Field(min_length=1, max_length=12)]
     assumptions: Annotated[list[str], Field(max_length=12)]

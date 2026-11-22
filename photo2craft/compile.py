@@ -84,7 +84,7 @@ def compile_plan(plan: Plan, extent: int = 48) -> Build:
         boxes[vid] = tuple(start), tuple(stop)
         roof = volumes[vid].roof
         top = q(o[1] + s[1] * (1 + roof.rise), 1)
-        if roof.kind != "none" and top <= stop[1]:
+        if roof.kind != "none" and roof.rise > 0 and top <= stop[1]:
             warnings.append(f"{vid}: roof lost at this resolution")
         roof_tops[vid] = top
 
@@ -160,6 +160,23 @@ def compile_plan(plan: Plan, extent: int = 48) -> Build:
     for vid in volumes:
         if not owned[vid]:
             warnings.append(f"{vid}: entirely overwritten")
+    # First/last occupied cells along each axis expose buried parts such as a
+    # colored beam inside a closed wall. This is not a camera visibility score.
+    exposed = set()
+    for axis in range(3):
+        rays = {}
+        for p in blocks:
+            key = tuple(p[i] for i in range(3) if i != axis)
+            if key not in rays:
+                rays[key] = [p, p]
+            else:
+                if p[axis] < rays[key][0][axis]:
+                    rays[key][0] = p
+                if p[axis] > rays[key][1][axis]:
+                    rays[key][1] = p
+        exposed.update(owners[p] for pair in rays.values() for p in pair)
+    for part_id in sorted(owned.keys() - exposed):
+        warnings.append(f"{part_id}: hidden along all six axis-aligned views")
     if plan.suitability == "approximate":
         warnings.append("analysis marked this building approximate")
     return Build(blocks, owners, boxes, warnings)

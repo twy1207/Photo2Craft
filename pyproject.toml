@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "photo2craft"
+version = "0.2.0"
+description = "An experimental photo-to-block building compiler"
+requires-python = ">=3.12"
+dependencies = ["Pillow==13.0.0", "pydantic==2.14.3"]
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0"]
+
+[project.scripts]
+photo2craft = "photo2craft.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["photo2craft*"]
+
+[tool.setuptools.package-data]
+photo2craft = ["prompt.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

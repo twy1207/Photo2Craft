@@ -1,0 +1,133 @@
+{
+  "format": "photo2craft-spatial-resolution-v1",
+  "boxes": {
+    "body": {
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size": [
+        1.0,
+        0.6,
+        0.8
+      ]
+    },
+    "floor": {
+      "origin": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "size": [
+        1.0,
+        0.03,
+        0.2
+      ]
+    },
+    "canopy": {
+      "origin": [
+        0.0,
+        0.57,
+        -0.2
+      ],
+      "size": [
+        1.0,
+        0.03,
+        0.2
+      ]
+    },
+    "post_left": {
+      "origin": [
+        0.08,
+        0.03,
+        -0.196
+      ],
+      "size": [
+        0.04,
+        0.5399999999999999,
+        0.032
+      ]
+    },
+    "post_right": {
+      "origin": [
+        0.88,
+        0.03,
+        -0.196
+      ],
+      "size": [
+        0.04,
+        0.5399999999999999,
+        0.032
+      ]
+    }
+  },
+  "relations": [
+    {
+      "part": "floor",
+      "host": "body",
+      "face": "front",
+      "vertical": {
+        "mode": "face",
+        "lower": null,
+        "upper": null
+      },
+      "resolved_height": 0.03
+    },
+    {
+      "part": "canopy",
+      "host": "body",
+      "face": "front",
+      "vertical": {
+        "mode": "align_top",
+        "lower": null,
+        "upper": "body"
+      },
+      "resolved_height": 0.03
+    },
+    {
+      "part": "post_left",
+      "host": "floor",
+      "face": "top",
+      "vertical": {
+        "mode": "between",
+        "lower": "floor",
+        "upper": "canopy"
+      },
+      "resolved_height": 0.5399999999999999
+    },
+    {
+      "part": "post_right",
+      "host": "floor",
+      "face": "top",
+      "vertical": {
+        "mode": "between",
+        "lower": "floor",
+        "upper": "canopy"
+      },
+      "resolved_height": 0.5399999999999999
+    }
+  ],
+  "open_spaces": [
+    {
+      "id": "clear_area",
+      "origin": [
+        0.0,
+        0.03,
+        -0.2
+      ],
+      "size": [
+        1.0,
+        0.5399999999999999,
+        0.2
+      ],
+      "allowed_parts": [
+        "post_left",
+        "post_right"
+      ],
+      "blocked_by": []
+    }
+  ],
+  "adjustments": [],
+  "warnings": []
+}

@@ -1,0 +1,9 @@
+{
+  "path_base": "repository root",
+  "files": {
+    "prompt.txt": {
+      "path": "examples/gothic/run-04/prompt.txt",
+      "sha256": "bb1bf9edc0617a2a32a502a168ddb8b58d7ac114b3f1d466bccbf2bd9bcf4566"
+    }
+  }
+}

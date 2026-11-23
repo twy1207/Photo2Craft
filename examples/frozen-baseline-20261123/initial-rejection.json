@@ -1,0 +1,7 @@
+{
+  "api_status": "plan_validated",
+  "initial_build_status": "rejected",
+  "message": "porch_deck: addition exceeds frozen baseline bounds",
+  "rerun_api_requests": 0,
+  "followup": "Same unedited proposal built after adding generic plain-box clipping with logged adjustments."
+}

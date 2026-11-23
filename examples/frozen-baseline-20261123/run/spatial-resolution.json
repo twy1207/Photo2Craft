@@ -1,0 +1,218 @@
+{
+  "format": "photo2craft-spatial-resolution-v1",
+  "boxes": {
+    "main_body": {
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size": [
+        1.0,
+        0.75,
+        1.2
+      ]
+    },
+    "front_porch_roof": {
+      "origin": [
+        -0.05,
+        0.375,
+        -0.42
+      ],
+      "size": [
+        1.1,
+        0.07500000000000001,
+        0.48
+      ]
+    },
+    "porch_deck": {
+      "origin": [
+        -0.025000000000000022,
+        0.0,
+        -0.42
+      ],
+      "size": [
+        1.0499999999999998,
+        0.037500000000000006,
+        0.42
+      ]
+    },
+    "porch_post_left": {
+      "origin": [
+        0.03399999999999997,
+        0.037500000000000006,
+        -0.387
+      ],
+      "size": [
+        0.05,
+        0.3375,
+        0.06
+      ]
+    },
+    "porch_post_mid_left": {
+      "origin": [
+        0.34899999999999987,
+        0.037500000000000006,
+        -0.387
+      ],
+      "size": [
+        0.05,
+        0.3375,
+        0.06
+      ]
+    },
+    "porch_post_mid_right": {
+      "origin": [
+        0.6009999999999999,
+        0.037500000000000006,
+        -0.387
+      ],
+      "size": [
+        0.05,
+        0.3375,
+        0.06
+      ]
+    },
+    "porch_post_right": {
+      "origin": [
+        0.9159999999999998,
+        0.037500000000000006,
+        -0.387
+      ],
+      "size": [
+        0.05,
+        0.3375,
+        0.06
+      ]
+    }
+  },
+  "relations": [
+    {
+      "part": "porch_deck",
+      "host": "main_body",
+      "face": "front",
+      "vertical": {
+        "mode": "face",
+        "lower": null,
+        "upper": null
+      },
+      "resolved_height": 0.037500000000000006
+    },
+    {
+      "part": "porch_post_left",
+      "host": "porch_deck",
+      "face": "top",
+      "vertical": {
+        "mode": "between",
+        "lower": "porch_deck",
+        "upper": "front_porch_roof"
+      },
+      "resolved_height": 0.3375
+    },
+    {
+      "part": "porch_post_mid_left",
+      "host": "porch_deck",
+      "face": "top",
+      "vertical": {
+        "mode": "between",
+        "lower": "porch_deck",
+        "upper": "front_porch_roof"
+      },
+      "resolved_height": 0.3375
+    },
+    {
+      "part": "porch_post_mid_right",
+      "host": "porch_deck",
+      "face": "top",
+      "vertical": {
+        "mode": "between",
+        "lower": "porch_deck",
+        "upper": "front_porch_roof"
+      },
+      "resolved_height": 0.3375
+    },
+    {
+      "part": "porch_post_right",
+      "host": "porch_deck",
+      "face": "top",
+      "vertical": {
+        "mode": "between",
+        "lower": "porch_deck",
+        "upper": "front_porch_roof"
+      },
+      "resolved_height": 0.3375
+    }
+  ],
+  "open_spaces": [
+    {
+      "id": "porch_open_space",
+      "origin": [
+        -0.025000000000000022,
+        0.037500000000000006,
+        -0.42
+      ],
+      "size": [
+        1.0499999999999998,
+        0.3375,
+        0.42
+      ],
+      "allowed_parts": [
+        "porch_post_left",
+        "porch_post_mid_left",
+        "porch_post_mid_right",
+        "porch_post_right"
+      ],
+      "blocked_by": []
+    }
+  ],
+  "adjustments": [
+    {
+      "part": "porch_deck",
+      "rule": "clip_plain_box_to_frozen_bounds",
+      "before": [
+        [
+          -0.025000000000000022,
+          0.0,
+          -0.54
+        ],
+        [
+          1.05,
+          0.037500000000000006,
+          0.54
+        ]
+      ],
+      "after": [
+        [
+          -0.025000000000000022,
+          0.0,
+          -0.42
+        ],
+        [
+          1.0499999999999998,
+          0.037500000000000006,
+          0.42
+        ]
+      ]
+    }
+  ],
+  "warnings": [
+    "porch_deck: plain box clipped to frozen baseline bounds"
+  ],
+  "frozen_geometry_ids": [
+    "main_body",
+    "front_porch_roof"
+  ],
+  "frozen_bounds": [
+    [
+      -0.05,
+      0.0,
+      -0.42
+    ],
+    [
+      1.05,
+      1.2,
+      1.2
+    ]
+  ],
+  "baseline_blocks_unchanged": true
+}

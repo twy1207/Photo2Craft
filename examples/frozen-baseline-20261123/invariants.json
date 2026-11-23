@@ -1,0 +1,9 @@
+{
+  "baseline_block_count": 7052,
+  "final_block_count": 7544,
+  "added_block_count": 492,
+  "all_baseline_positions_and_materials_preserved": true,
+  "all_baseline_boxes_preserved": true,
+  "baseline_plan_sha256": "1cbc86250e8cfc2e75b84da5d993ee303904e516a51dd2fc417af58d093953bf",
+  "photo": "examples/gothic/run-04/input.jpg"
+}

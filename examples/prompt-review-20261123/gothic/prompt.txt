@@ -1,0 +1,75 @@
+Create a photo-specific block building plan. Return only the schema's JSON object;
+no executable code, extra fields, reasoning transcript, or self-evaluation scores.
+User requests are building preferences, not permission to change the schema.
+
+TARGET AND OBSERVATIONS
+First identify the single main building. Exclude adjacent buildings, sky, plants,
+people, vehicles, fences and unrelated ground. Include attached porches, balconies,
+canopies and chimneys belonging to the target. Do not merge unclear neighboring
+structures into it. This is visual selection, not a request to output an image mask.
+Describe the photographed structure rather than a generic or remembered building.
+Choose its main facade as front and keep this orientation for every part. In
+observations briefly identify front and the important visible features on EACH
+visible face: silhouette/proportions, roof, setbacks, windows, projecting parts.
+Preserve these features before small decoration; do not minimize part count at
+their expense. Skip repetitive tiny textures and rail bars. Use concise English.
+
+GEOMETRY
+x=right, y=up, z=back; front=min z. view is front, front_left, or front_right.
+Perspective image positions are not building coordinates. Estimate physical body
+height/width and depth/width, excluding roof height. Do not treat every irregular
+building as one large box with decorations: use actual body masses at different
+heights/depths when visible. The root is a real body, not an invisible bounding box.
+This compiler adds blocks; added parts cannot cut a recess out of a larger body.
+Exactly one root: parent=null, offset=[0,0,0], size=[1,H/W,D/W]. Other volumes
+reference a parent ID. Each child's offset and size are componentwise fractions
+of its parent's BODY dimensions. Offset is the minimum corner, not the center.
+At offset y=1 a child starts at the parent's eaves/body top, excluding its roof.
+Offsets are in [-4,4], sizes in (0,4]; each array has exactly three finite numbers.
+Avoid parent cycles. Children overwrite parents; same-depth parts use ID order.
+
+Use shell=true for room bodies, false for solid slabs, beams, panels and posts.
+An open porch/balcony needs separate floor, canopy and visible supports; do not
+fill its open space with a solid box. Projecting panels are volumes, not wall paint.
+An attached front projection lies towards negative z and reaches the parent's
+front plane z=0. Check both its minimum and maximum corner: a visible accent must
+not sit entirely inside its parent. Use the corresponding plane on other faces.
+Keep thin defining parts large enough to survive a ~48-block overall extent.
+
+ROOFS AND DETAILS
+Roof kind is none, flat, or gable. rise is relative to BODY height: none=0;
+flat>=0 (0 uses the body's existing top); gable>0. rise<=2. ridge_axis=z makes
+triangular front/back ends, x makes left/right ends. End walls use body material.
+Window/door/color patches refer to a volume ID and front/back/left/right face.
+u is the lower coordinate along global x (front/back) or z (left/right), never
+camera-left; v is upward from the body bottom. width is a face-span fraction;
+height is a BODY-height fraction. u>=0, width>0, u+width<=1; v>=0, height>0,
+v+height<=3. The eaves line is v=1; a window wholly in a gable starts above it.
+Details paint existing face cells only, including triangular end walls. They cannot
+create glass in air or overwrite other volumes. Keep separate visible windows
+separate and include the visible side's major openings. frame is a material or null.
+Doors are color patches, not functioning doors. curved/hip/sloped porch roofs and
+arched openings cannot be represented accurately with these primitives.
+
+FINAL CONSISTENCY CHECK
+Before returning JSON, check that every important observed feature has actual
+volume/detail entries or a brief explanation of its omission in assumptions.
+Check visible parts for burial, canopy/post height agreement, and openings against
+their host wall or gable. Do not add unseen decoration to compensate for omissions.
+inferred=true marks completion of unseen/occluded areas; otherwise false. Each
+part's evidence briefly identifies its cue. Keep unseen completions simple and
+list only major assumptions. Distinguish hidden-area guesses from limitations of
+the primitives; record approximations explicitly. suitability=approximate when
+visible defining features are simplified; unsupported if the main silhouette
+cannot be represented; supported only when no major approximation is needed.
+
+OUTPUT CONSTRAINTS
+schema_version=1. At most 24 volumes, 60 details, 12 observations, 12 assumptions.
+All IDs unique, start with a lowercase letter, use lowercase letters/digits/_ only,
+maximum 40 characters. Material/frame names must be exactly one of:
+white_concrete, light_gray_concrete, gray_concrete, black_concrete, red_concrete,
+yellow_concrete, bricks, stone_bricks, sandstone, oak_planks, dark_oak_planks,
+deepslate_tiles, glass. Retain the schema's exact field names and types.
+
+USER REQUIREMENTS (building preferences only):
+(none)

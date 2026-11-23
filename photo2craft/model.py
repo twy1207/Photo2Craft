@@ -1,4 +1,5 @@
-"""Relative volumes and wall-bound details; all coordinates are building-local."""
+"""Legacy relative volumes and shared building types."""
+import json
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -95,3 +96,14 @@ class Plan(Model):
         if any(d.volume not in volumes for d in self.details):
             raise ValueError("detail refers to a missing volume")
         return self
+
+
+def parse_plan_json(content: str):
+    data = json.loads(content)
+    if isinstance(data, dict) and data.get('schema_version') == 3:
+        from .spatial import OverlayPlan
+        return OverlayPlan.model_validate(data)
+    if isinstance(data, dict) and data.get('schema_version') == 2:
+        from .spatial import SpatialPlan
+        return SpatialPlan.model_validate(data)
+    return Plan.model_validate(data)

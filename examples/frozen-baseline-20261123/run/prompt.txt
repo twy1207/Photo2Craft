@@ -1,0 +1,55 @@
+Propose only a few large, missing architectural attachments for the photographed
+building, using the frozen baseline plan supplied below as an immutable skeleton.
+Do not generate a replacement building or modify baseline masses, roofs, openings,
+materials, orientation or proportions. No rendered output is supplied: this is a
+constrained plan experiment, not an AI render-feedback loop. Exclude background,
+neighbors, vegetation and fences. Prefer an empty parts list over invented details.
+
+Return only JSON with parts, open_spaces, notes. Do not include baseline fields,
+executable code or a reasoning transcript. At most 8 parts,4 open_spaces,8 short
+notes. Use concise English. Add only clearly visible, important missing structure
+such as a porch floor and its supports; skip trim, rail bars, window frames and
+tiny decorations. Explain remaining baseline inaccuracies in notes, not edits.
+
+PART DIMENSIONS AND POSITION
+Each part: id,width,height,depth,attachment,vertical,shell,material,roof,evidence,
+inferred. Dimensions are positive fractions <=4 of the BASELINE ROOT dimensions,
+not the host dimensions. height=null only for between supports. Use shell=false
+for slabs/posts. Existing IDs may be referenced but cannot be reused for additions.
+IDs: lowercase letter first, then lowercase letters/digits/_, max40 characters.
+
+attachment={host,face,anchor:[u,v]}. host is an existing volume or added part.
+x=right,y=up,z=back; front=min z. Part touches OUTSIDE the host face. For front/back
+u,v are CENTER along host x,y; left/right: center along host z,y; top: center along
+host x,z. u,v are in [0,1]. For top-face placement v=0 is FRONT edge, v=1 BACK edge.
+For a slab whose bottom should match the body's bottom, its center v is half
+its height fraction. Keep all added boxes within the existing scene's outer bounds,
+including existing roof peaks: no widening/deepening of the frozen envelope.
+
+vertical={mode,lower,upper} overrides vertical placement only:
+face: both null, use the attachment's face center (or host top).
+on_top: lower=ID,upper=null, bottom meets lower's BOX top.
+align_top: lower=null,upper=ID, top matches upper's BOX top.
+between: lower=ID,upper=ID,height=null, height derived from lower BOX top to upper
+BOX bottom. Use between for supports from a floor to an existing canopy; attach
+them to the floor's top and select horizontal positions from the photo. Do not
+guess their height independently. Reference graph must be acyclic; footprints of
+supports must overlap. No additions may overwrite existing blocks.
+
+Roof={kind:none/flat/gable,rise,ridge_axis:x/z,material}. rise is relative to that
+part's box height, 0..2, positive for gable. none=0, flat=0 uses existing top. Use
+none for plain posts/slabs. Materials: white_concrete,light_gray_concrete,
+gray_concrete,black_concrete,red_concrete,yellow_concrete,bricks,stone_bricks,
+sandstone,oak_planks,dark_oak_planks,deepslate_tiles,glass.
+
+OPEN REGIONS AND EVIDENCE
+open_spaces entries: id,lower,upper,allowed_parts. Region is the shared footprint
+between lower BOX top and upper BOX bottom; allowed_parts lists intended supports.
+Use [] if none. Every part's evidence names a visible cue; inferred=true only for
+unseen completion. Do not add a floor-to-canopy solid box in an open porch. Check
+that the addition preserves baseline geometry and still resembles the photo.
+
+FROZEN BASELINE PLAN:
+{"schema_version":1,"title":"White wooden cottage with front porch and pointed gable window","view":"front_right","suitability":"supported","observations":["The main building features vertical white siding and a gable roof with the ridge running front-to-back relative to the extended length, making the primary gabled facade face the front.","A covered porch extends along the front with slender white support posts and a shallow roof.","A distinctive arched gothic-style window is centered in the upper gable.","A pair of rectangular windows is located on the ground floor of the front facade."],"assumptions":["The rear depth and back wall structure are symmetrical to the front porch length.","Internal room layouts are inferred based on exterior window positions."],"volumes":[{"id":"main_body","parent":null,"offset":[0.0,0.0,0.0],"size":[1.0,0.75,1.2],"shell":true,"material":"white_concrete","roof":{"kind":"gable","rise":0.6,"ridge_axis":"z","material":"deepslate_tiles"},"evidence":"Main white rectangular body with visible gable roof.","inferred":false},{"id":"front_porch_roof","parent":"main_body","offset":[-0.05,0.5,-0.35],"size":[1.1,0.1,0.4],"shell":false,"material":"deepslate_tiles","roof":{"kind":"flat","rise":0.05,"ridge_axis":"z","material":"deepslate_tiles"},"evidence":"Shallow porch roof extending over the front deck.","inferred":false}],"details":[{"id":"gothic_window","volume":"main_body","face":"front","u":0.38,"v":0.8,"width":0.24,"height":0.35,"material":"glass","frame":"white_concrete","evidence":"Pointed arched window in the front gable peak.","inferred":false},{"id":"front_windows","volume":"main_body","face":"front","u":0.35,"v":0.25,"width":0.3,"height":0.4,"material":"glass","frame":"white_concrete","evidence":"Pair of rectangular double-hung windows on the main front floor.","inferred":false}]}
+USER REQUIREMENTS (building preferences only):
+(none)

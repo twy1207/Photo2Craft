@@ -1,0 +1,35 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "{\n  \"parts\": [\n    {\n      \"id\": \"porch_deck\",\n      \"width\": 1.05,\n      \"height\": 0.05,\n      \"depth\": 0.45,\n      \"attachment\": {\n        \"host\": \"main_body\",\n        \"face\": \"front\",\n        \"anchor\": [0.5, 0.025]\n      },\n      \"vertical\": {\n        \"mode\": \"face\",\n        \"lower\": null,\n        \"upper\": null\n      },\n      \"shell\": false,\n      \"material\": \"oak_planks\",\n      \"roof\": {\n        \"kind\": \"none\",\n        \"rise\": 0.0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"oak_planks\"\n      },\n      \"evidence\": \"Visible wooden porch deck platform below the front porch roof.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"porch_post_left\",\n      \"width\": 0.05,\n      \"height\": null,\n      \"depth\": 0.05,\n      \"attachment\": {\n        \"host\": \"porch_deck\",\n        \"face\": \"top\",\n        \"anchor\": [0.08, 0.15]\n      },\n      \"vertical\": {\n        \"mode\": \"between\",\n        \"lower\": \"porch_deck\",\n        \"upper\": \"front_porch_roof\"\n      },\n      \"shell\": false,\n      \"material\": \"white_concrete\",\n      \"roof\": {\n        \"kind\": \"none\",\n        \"rise\": 0.0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"white_concrete\"\n      },\n      \"evidence\": \"Leftmost support post on the front porch deck.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"porch_post_mid_left\",\n      \"width\": 0.05,\n      \"height\": null,\n      \"depth\": 0.05,\n      \"attachment\": {\n        \"host\": \"porch_deck\",\n        \"face\": \"top\",\n        \"anchor\": [0.38, 0.15]\n      },\n      \"vertical\": {\n        \"mode\": \"between\",\n        \"lower\": \"porch_deck\",\n        \"upper\": \"front_porch_roof\"\n      },\n      \"shell\": false,\n      \"material\": \"white_concrete\",\n      \"roof\": {\n        \"kind\": \"none\",\n        \"rise\": 0.0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"white_concrete\"\n      },\n      \"evidence\": \"Middle-left support post on the front porch deck.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"porch_post_mid_right\",\n      \"width\": 0.05,\n      \"height\": null,\n      \"depth\": 0.05,\n      \"attachment\": {\n        \"host\": \"porch_deck\",\n        \"face\": \"top\",\n        \"anchor\": [0.62, 0.15]\n      },\n      \"vertical\": {\n        \"mode\": \"between\",\n        \"lower\": \"porch_deck\",\n        \"upper\": \"front_porch_roof\"\n      },\n      \"shell\": false,\n      \"material\": \"white_concrete\",\n      \"roof\": {\n        \"kind\": \"none\",\n        \"rise\": 0.0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"white_concrete\"\n      },\n      \"evidence\": \"Middle-right support post on the front porch deck.\",\n      \"inferred\": false\n    },\n    {\n      \"id\": \"porch_post_right\",\n      \"width\": 0.05,\n      \"height\": null,\n      \"depth\": 0.05,\n      \"attachment\": {\n        \"host\": \"porch_deck\",\n        \"face\": \"top\",\n        \"anchor\": [0.92, 0.15]\n      },\n      \"vertical\": {\n        \"mode\": \"between\",\n        \"lower\": \"porch_deck\",\n        \"upper\": \"front_porch_roof\"\n      },\n      \"shell\": false,\n      \"material\": \"white_concrete\",\n      \"roof\": {\n        \"kind\": \"none\",\n        \"rise\": 0.0,\n        \"ridge_axis\": \"z\",\n        \"material\": \"white_concrete\"\n      },\n      \"evidence\": \"Rightmost support post on the front porch deck.\",\n      \"inferred\": false\n    }\n  ],\n  \"open_spaces\": [\n    {\n      \"id\": \"porch_open_space\",\n      \"lower\": \"porch_deck\",\n      \"upper\": \"front_porch_roof\",\n      \"allowed_parts\": [\n        \"porch_post_left\",\n        \"porch_post_mid_left\",\n        \"porch_post_mid_right\",\n        \"porch_post_right\"\n      ]\n    }\n  ],\n  \"notes\": [\n    \"Added the missing porch deck and four slender vertical posts supporting the front porch roof as seen in the photograph.\"\n  ]\n}",
+            "thoughtSignature": "Eo4BCosBAWkUfRMcuswwC6uPRMci7J+VUHOzWPx9+r6tKIq00gimUpfAGOfmgD0DOLIlbi9sS317/M5F+WcVOoQKqQtOr9zsbvgUjHoDC6zA2uuwHZd9ndIHSNs+VM8Z8CRCQS4TK9Jw+LkjtZzKB4dVhG5Glpm1B8FN/cb+oVyL880Y2V5KG4N7jCbt0T6vJA=="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 2413,
+    "candidatesTokenCount": 1258,
+    "totalTokenCount": 3671,
+    "promptTokensDetails": [
+      {
+        "modality": "IMAGE",
+        "tokenCount": 1064
+      },
+      {
+        "modality": "TEXT",
+        "tokenCount": 1349
+      }
+    ],
+    "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "RvQDa_nDOZnY1e8PjsStgAs"
+}

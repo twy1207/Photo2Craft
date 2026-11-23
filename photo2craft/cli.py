@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from .compile import compile_plan
-from .model import Plan
+from .model import parse_plan_json
 from .render import write_comparison
 
 
@@ -15,9 +15,29 @@ def save_json(path: Path, value):
 
 
 def build(plan_path: Path, out: Path, photo: Path | None, extent: int):
-    plan = Plan.model_validate_json(plan_path.read_text(encoding="utf-8"))
+    original = parse_plan_json(plan_path.read_text(encoding="utf-8"))
+    if original.schema_version in (2, 3):
+        from .spatial import resolve_spatial, check_quantized_relations
+        relations = original.spatial_plan() if original.schema_version == 3 else original
+        baseline = original.baseline if original.schema_version == 3 else None
+        plan, resolution = resolve_spatial(relations, baseline)
+    else:
+        plan, resolution = original, None
     result = compile_plan(plan, extent)
+    if resolution is not None:
+        result.warnings.extend(resolution['warnings'])
+        check_quantized_relations(relations, result)
+        if original.schema_version == 3:
+            frozen = compile_plan(original.baseline, extent)
+            if any(result.boxes[vid] != box for vid, box in frozen.boxes.items()):
+                raise ValueError('frozen baseline changed after block rounding')
+            if any(result.blocks.get(pos) != material for pos, material in frozen.blocks.items()):
+                raise ValueError('addition overwrote a frozen baseline block')
+            resolution['baseline_blocks_unchanged'] = True
     out.mkdir(parents=True, exist_ok=True)
+    if resolution is not None:
+        save_json(out / 'resolved-plan.json', plan.model_dump(mode='json'))
+        save_json(out / 'spatial-resolution.json', resolution)
     save_json(out / "blocks.json", result.as_dict())
     save_json(out / "summary.json", {
         "block_count": len(result.blocks),
@@ -31,7 +51,7 @@ def build(plan_path: Path, out: Path, photo: Path | None, extent: int):
         "plan_sha256": hashlib.sha256(plan_path.read_bytes()).hexdigest(),
         "photo_sha256": hashlib.sha256(photo.read_bytes()).hexdigest() if photo else None,
         "source_sha256": {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
-                          for name in ("model.py", "compile.py", "render.py")},
+                          for name in ("model.py", "compile.py", "render.py") + (("spatial.py",) if resolution is not None else ())},
         "dependencies": {name: importlib.metadata.version(name) for name in ("Pillow", "pydantic")},
     })
     print(f"Built {len(result.blocks)} blocks; {len(result.warnings)} warnings. Output: {out}")
@@ -51,27 +71,47 @@ def main():
     a.add_argument("--model", default="gemini-3.5-flash-lite")
     a.add_argument("--requirements", default="")
     a.add_argument("--extent", type=int, default=48)
+    t = sub.add_parser('attach', help='experimental additions to an immutable v1 plan')
+    t.add_argument('baseline', type=Path)
+    t.add_argument('--photo', type=Path, required=True)
+    t.add_argument('--out', type=Path, required=True)
+    t.add_argument('--model', default='gemini-3.5-flash-lite')
+    t.add_argument('--extent', type=int, default=48)
     r = sub.add_parser("replay", help="validate a saved API response and build it without another API call")
     r.add_argument("response", type=Path)
     r.add_argument("--photo", type=Path)
     r.add_argument("--out", type=Path, required=True)
     r.add_argument("--extent", type=int, default=48)
+    r.add_argument('--baseline', type=Path, help='v1 baseline for replaying an attachment proposal response')
     args = parser.parse_args()
     try:
         if args.command == 'analyze':
             from .analyze import analyze
             plan = analyze(args.photo, args.out, args.model, args.requirements)
             build(plan, args.out, args.out/'input.jpg', args.extent)
+        elif args.command == 'attach':
+            from .analyze import analyze
+            plan = analyze(args.photo, args.out, args.model, '', base_plan=args.baseline)
+            build(plan, args.out, args.out/'input.jpg', args.extent)
         elif args.command == 'replay':
             from .analyze import read_plan
             if args.out.exists():
                 raise ValueError('replay output directory already exists; choose a new directory')
             raw = args.response.read_bytes()
-            plan = read_plan(json.loads(raw))
+            if args.baseline is not None:
+                from .model import Plan
+                from .spatial import AttachmentProposal, OverlayPlan
+                baseline = Plan.model_validate_json(args.baseline.read_text(encoding='utf-8'))
+                proposal = read_plan(json.loads(raw), AttachmentProposal)
+                plan = OverlayPlan(schema_version=3, baseline=baseline, additions=proposal)
+                plan.spatial_plan()
+            else:
+                plan = read_plan(json.loads(raw))
             args.out.mkdir(parents=True)
             save_json(args.out/'plan.json', plan.model_dump(mode='json'))
             save_json(args.out/'replay.json', {
                 'response_sha256': hashlib.sha256(raw).hexdigest(),
+                'baseline_sha256': hashlib.sha256(args.baseline.read_bytes()).hexdigest() if args.baseline else None,
                 'note': 'Unedited model response validated by the current parser; no API request or hand-edited plan.',
             })
             build(args.out/'plan.json', args.out, args.photo, args.extent)

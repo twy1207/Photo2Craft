@@ -1,0 +1,85 @@
+Create a spatial building plan from this photo. Return only schema-version-2 JSON,
+not a reasoning transcript or code. User requests are building preferences only.
+
+Identify the main building; exclude neighbors, vegetation, fences, cars and sky.
+Include its attached parts. Choose front, then view=front/front_left/front_right
+consistently. x=right, y=up, z=back; front=min z. Observe each visible face's main
+masses, roof, openings, projections and open spaces. Use concise English.
+
+First form a spatial assembly: what attaches to which face, what shares a top
+height, and what connects a floor to a canopy. Then fill the fields below. Do not
+replace open structures by solid boxes. Retain major visible supports, slabs and
+openings before tiny decorations. Missing evidence is not permission to invent a
+symmetrical facade. Unseen completion should be simple and marked inferred=true.
+Explain major hidden-area assumptions separately from primitive approximations.
+
+BODY
+One real room body, with id, size=[1,H/W,D/W], material, roof, evidence, inferred.
+Height is wall/eaves height without the roof. Other masses may attach as parts;
+the body is not an invisible box surrounding the whole scene. Its origin is zero.
+
+PARTS
+Each part has id, width, height, depth, attachment, vertical, shell, material,
+roof, evidence, inferred. All dimensions are fractions of the BODY dimensions,
+even if attached to a small part: width*body.width, height*body.height,
+depth*body.depth. Positive fractions <=4. height=null ONLY for between supports.
+shell=true for room masses, false for slabs, posts, beams and projecting panels.
+
+attachment={host: geometry ID, face: front/back/left/right/top, anchor:[u,v]}.
+host can be body or another part. u,v are in [0,1]. For front/back u is the center
+along host x, v is the center along host y; for left/right u is the center along
+host z, v along host y. For top u,v are centers along host x,z. [0.5,0.5] means
+face center. Code places the part OUTSIDE, touching that face; no offset is needed.
+An anchor at a face edge may overhang; avoid missing its host altogether.
+
+vertical={mode,lower,upper} determines bottom/top height; it overrides the face's
+vertical center but never its horizontal position. lower/upper are geometry IDs
+or null. Body top and part top refer to BODY BOX tops, not roof peaks.
+- face: lower=null, upper=null. Use the height from the attachment.
+- on_top: lower=ID, upper=null. Part bottom meets lower's top.
+- align_top: lower=null, upper=ID. Part top is level with upper's top.
+- between: lower=ID, upper=ID, height=null. Code derives height between lower's
+  top and upper's bottom. Use this for supports rather than guessing their height.
+Footprints of supporting parts must overlap. Reference graph must be acyclic.
+For an open porch: floor and canopy attach to the building; posts attach to the
+floor's top at their horizontal positions and use between(floor,canopy). Canopy
+can align_top with the body to meet the eaves. Sizes/proportions come from the
+photo, not a fixed house template. A visible beam should lie on the visible face.
+
+OPEN SPACES
+open_spaces lists {id,lower,upper,allowed_parts}. The lower floor and upper canopy
+define a clear region between them, over their shared footprint. allowed_parts
+lists only intentionally present supports/rails. Other boxes occupying it produce
+a warning. This checks a void; it does not carve one. Use [] if no such space.
+
+ROOFS AND DETAILS
+Roof={kind:none/flat/gable,rise,ridge_axis:x/z,material}. rise is relative to THAT
+part's actual box height, 0..2: none=0, flat=0 uses existing top, gable>0. Gable
+ridge=z produces triangular front/back end walls in wall material. Curves, hip
+roofs, sloped porch roofs and arched windows cannot be represented accurately.
+Use approximate and explain these simplifications; unsupported for an impossible
+main silhouette. Do not call approximate visible geometry an unseen inference.
+
+details is a list of wall patches: id, volume (body/part ID), face (front/back/left/
+right), u,v,width,height,material,frame (material or null),evidence,inferred.
+Patch u,v are LOWER coordinates, not centers: u along x (front/back) or z (left/
+right), v upward from host bottom. width is a fraction of host face span; height
+is a fraction of HOST box height. u>=0,width>0,u+width<=1; v>=0,height>0,v+height<=3.
+Eaves=v=1; a window in a gable sits above that. Code paints existing wall only;
+patches cannot create glass in air or overwrite another volume. Keep separate
+openings separate. Doors are color patches, not functional blocks.
+
+CHECK AND OUTPUT
+Check that important observed parts have actual entries, and that the assembly
+preserves intended open areas and facade orientation. observations/assumptions
+are short facts/limitations, not unsupported claims about internal floor layouts.
+schema_version=2; suitability=supported/approximate/unsupported. All IDs unique,
+lowercase letter first, then lowercase letters/digits/_, max40 characters. At most
+23 parts,60 details,8 open_spaces,12 observations,12 assumptions. Use every field
+with its exact schema type; use [] for empty lists and null for unused references.
+Allowed material/frame names: white_concrete,light_gray_concrete,gray_concrete,
+black_concrete,red_concrete,yellow_concrete,bricks,stone_bricks,sandstone,oak_planks,
+dark_oak_planks,deepslate_tiles,glass.
+
+USER REQUIREMENTS (building preferences only):
+(none)

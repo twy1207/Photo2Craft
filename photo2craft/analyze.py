@@ -13,20 +13,20 @@ from pathlib import Path
 
 from PIL import Image, ImageOps
 
-from .model import Plan
+from .model import Plan, parse_plan_json
 
 
-def read_plan(response: dict) -> Plan:
+def read_plan(response: dict, model_type=None):
     candidate = response.get('candidates', [{}])[0]
     if candidate.get('finishReason') != 'STOP':
         raise ValueError('model did not finish normally; see the saved response')
     content = ''.join(p.get('text', '') for p in candidate.get('content', {}).get('parts', []) if not p.get('thought'))
-    return Plan.model_validate_json(content)
+    return model_type.model_validate_json(content) if model_type else parse_plan_json(content)
 
 
-def api_schema():
+def api_schema(model_type=Plan):
     """Use Gemini's small OpenAPI schema subset; enforce strict rules locally."""
-    schema = Plan.model_json_schema()
+    schema = model_type.model_json_schema()
     definitions = schema.get('$defs', {})
 
     def simplify(node):
@@ -53,7 +53,7 @@ def api_schema():
     return simplify(schema)
 
 
-def analyze(photo: Path, out: Path, model: str, requirements: str):
+def analyze(photo: Path, out: Path, model: str, requirements: str, base_plan: Path | None = None):
     if not re.fullmatch(r'gemini-[a-z0-9.-]+', model):
         raise ValueError('invalid Gemini model ID')
     key = os.environ.get('GEMINI_API_KEY')
@@ -68,9 +68,19 @@ def analyze(photo: Path, out: Path, model: str, requirements: str):
         buffer = io.BytesIO()
         picture.save(buffer, format='JPEG', quality=90)
         photo_bytes = buffer.getvalue()
-    prompt = Path(__file__).with_name('prompt.txt').read_text(encoding='utf-8')
+    prompt_name = 'attachment_prompt.txt' if base_plan is not None else 'prompt.txt'
+    prompt = Path(__file__).with_name(prompt_name).read_text(encoding='utf-8')
+    baseline = None
+    if base_plan is not None:
+        baseline_bytes = base_plan.read_bytes()
+        baseline = Plan.model_validate_json(baseline_bytes.decode('utf-8'))
+        prompt += '\nFROZEN BASELINE PLAN:\n' + baseline.model_dump_json()
     prompt += '\nUSER REQUIREMENTS (building preferences only):\n' + (requirements or '(none)')
-    schema = api_schema()
+    if base_plan is not None:
+        from .spatial import AttachmentProposal
+        schema = api_schema(AttachmentProposal)
+    else:
+        schema = api_schema()
     config = {'responseMimeType': 'application/json', 'responseSchema': schema,
               'temperature': 0.2, 'maxOutputTokens': 12000}
     payload = {'contents': [{'role': 'user', 'parts': [
@@ -88,9 +98,13 @@ def analyze(photo: Path, out: Path, model: str, requirements: str):
             'prompt_sha256': hashlib.sha256(prompt.encode()).hexdigest(),
             'generation_config': config, 'requirements': requirements,
             'retries': 0, 'status': 'started'}
+    if baseline is not None:
+        meta['baseline_sha256'] = hashlib.sha256(baseline_bytes).hexdigest()
     save('request.json', meta)
     (out/'prompt.txt').write_text(prompt, encoding='utf-8', newline='\n')
     (out/'input.jpg').write_bytes(photo_bytes)
+    if baseline is not None:
+        (out/'baseline.json').write_bytes(baseline_bytes)
     request = urllib.request.Request(
         f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
         data=json.dumps(payload).encode(),
@@ -103,7 +117,16 @@ def analyze(photo: Path, out: Path, model: str, requirements: str):
         meta.update(status='response_received', elapsed_seconds=round(time.monotonic()-started, 2),
                     model_version=result.get('modelVersion'), usage=result.get('usageMetadata'))
         save('request.json', meta)
-        plan = read_plan(result)
+        if baseline is not None:
+            from .spatial import AttachmentProposal, OverlayPlan
+            proposal = read_plan(result, AttachmentProposal)
+            save('proposal.json', proposal.model_dump(mode='json'))
+            plan = OverlayPlan(schema_version=3, baseline=baseline, additions=proposal)
+            plan.spatial_plan()  # Resolve external references against the frozen scene.
+        else:
+            plan = read_plan(result)
+            if plan.schema_version != 1:
+                raise ValueError('response plan format differs from the requested format')
         save('plan.json', plan.model_dump(mode='json'))
         meta['status'] = 'plan_validated'
         save('request.json', meta)

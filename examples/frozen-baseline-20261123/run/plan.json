@@ -1,0 +1,262 @@
+{
+  "schema_version": 3,
+  "baseline": {
+    "schema_version": 1,
+    "title": "White wooden cottage with front porch and pointed gable window",
+    "view": "front_right",
+    "suitability": "supported",
+    "observations": [
+      "The main building features vertical white siding and a gable roof with the ridge running front-to-back relative to the extended length, making the primary gabled facade face the front.",
+      "A covered porch extends along the front with slender white support posts and a shallow roof.",
+      "A distinctive arched gothic-style window is centered in the upper gable.",
+      "A pair of rectangular windows is located on the ground floor of the front facade."
+    ],
+    "assumptions": [
+      "The rear depth and back wall structure are symmetrical to the front porch length.",
+      "Internal room layouts are inferred based on exterior window positions."
+    ],
+    "volumes": [
+      {
+        "id": "main_body",
+        "parent": null,
+        "offset": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "size": [
+          1.0,
+          0.75,
+          1.2
+        ],
+        "shell": true,
+        "material": "white_concrete",
+        "roof": {
+          "kind": "gable",
+          "rise": 0.6,
+          "ridge_axis": "z",
+          "material": "deepslate_tiles"
+        },
+        "evidence": "Main white rectangular body with visible gable roof.",
+        "inferred": false
+      },
+      {
+        "id": "front_porch_roof",
+        "parent": "main_body",
+        "offset": [
+          -0.05,
+          0.5,
+          -0.35
+        ],
+        "size": [
+          1.1,
+          0.1,
+          0.4
+        ],
+        "shell": false,
+        "material": "deepslate_tiles",
+        "roof": {
+          "kind": "flat",
+          "rise": 0.05,
+          "ridge_axis": "z",
+          "material": "deepslate_tiles"
+        },
+        "evidence": "Shallow porch roof extending over the front deck.",
+        "inferred": false
+      }
+    ],
+    "details": [
+      {
+        "id": "gothic_window",
+        "volume": "main_body",
+        "face": "front",
+        "u": 0.38,
+        "v": 0.8,
+        "width": 0.24,
+        "height": 0.35,
+        "material": "glass",
+        "frame": "white_concrete",
+        "evidence": "Pointed arched window in the front gable peak.",
+        "inferred": false
+      },
+      {
+        "id": "front_windows",
+        "volume": "main_body",
+        "face": "front",
+        "u": 0.35,
+        "v": 0.25,
+        "width": 0.3,
+        "height": 0.4,
+        "material": "glass",
+        "frame": "white_concrete",
+        "evidence": "Pair of rectangular double-hung windows on the main front floor.",
+        "inferred": false
+      }
+    ]
+  },
+  "additions": {
+    "parts": [
+      {
+        "id": "porch_deck",
+        "width": 1.05,
+        "height": 0.05,
+        "depth": 0.45,
+        "attachment": {
+          "host": "main_body",
+          "face": "front",
+          "anchor": [
+            0.5,
+            0.025
+          ]
+        },
+        "vertical": {
+          "mode": "face",
+          "lower": null,
+          "upper": null
+        },
+        "shell": false,
+        "material": "oak_planks",
+        "roof": {
+          "kind": "none",
+          "rise": 0.0,
+          "ridge_axis": "z",
+          "material": "oak_planks"
+        },
+        "evidence": "Visible wooden porch deck platform below the front porch roof.",
+        "inferred": false
+      },
+      {
+        "id": "porch_post_left",
+        "width": 0.05,
+        "height": null,
+        "depth": 0.05,
+        "attachment": {
+          "host": "porch_deck",
+          "face": "top",
+          "anchor": [
+            0.08,
+            0.15
+          ]
+        },
+        "vertical": {
+          "mode": "between",
+          "lower": "porch_deck",
+          "upper": "front_porch_roof"
+        },
+        "shell": false,
+        "material": "white_concrete",
+        "roof": {
+          "kind": "none",
+          "rise": 0.0,
+          "ridge_axis": "z",
+          "material": "white_concrete"
+        },
+        "evidence": "Leftmost support post on the front porch deck.",
+        "inferred": false
+      },
+      {
+        "id": "porch_post_mid_left",
+        "width": 0.05,
+        "height": null,
+        "depth": 0.05,
+        "attachment": {
+          "host": "porch_deck",
+          "face": "top",
+          "anchor": [
+            0.38,
+            0.15
+          ]
+        },
+        "vertical": {
+          "mode": "between",
+          "lower": "porch_deck",
+          "upper": "front_porch_roof"
+        },
+        "shell": false,
+        "material": "white_concrete",
+        "roof": {
+          "kind": "none",
+          "rise": 0.0,
+          "ridge_axis": "z",
+          "material": "white_concrete"
+        },
+        "evidence": "Middle-left support post on the front porch deck.",
+        "inferred": false
+      },
+      {
+        "id": "porch_post_mid_right",
+        "width": 0.05,
+        "height": null,
+        "depth": 0.05,
+        "attachment": {
+          "host": "porch_deck",
+          "face": "top",
+          "anchor": [
+            0.62,
+            0.15
+          ]
+        },
+        "vertical": {
+          "mode": "between",
+          "lower": "porch_deck",
+          "upper": "front_porch_roof"
+        },
+        "shell": false,
+        "material": "white_concrete",
+        "roof": {
+          "kind": "none",
+          "rise": 0.0,
+          "ridge_axis": "z",
+          "material": "white_concrete"
+        },
+        "evidence": "Middle-right support post on the front porch deck.",
+        "inferred": false
+      },
+      {
+        "id": "porch_post_right",
+        "width": 0.05,
+        "height": null,
+        "depth": 0.05,
+        "attachment": {
+          "host": "porch_deck",
+          "face": "top",
+          "anchor": [
+            0.92,
+            0.15
+          ]
+        },
+        "vertical": {
+          "mode": "between",
+          "lower": "porch_deck",
+          "upper": "front_porch_roof"
+        },
+        "shell": false,
+        "material": "white_concrete",
+        "roof": {
+          "kind": "none",
+          "rise": 0.0,
+          "ridge_axis": "z",
+          "material": "white_concrete"
+        },
+        "evidence": "Rightmost support post on the front porch deck.",
+        "inferred": false
+      }
+    ],
+    "open_spaces": [
+      {
+        "id": "porch_open_space",
+        "lower": "porch_deck",
+        "upper": "front_porch_roof",
+        "allowed_parts": [
+          "porch_post_left",
+          "porch_post_mid_left",
+          "porch_post_mid_right",
+          "porch_post_right"
+        ]
+      }
+    ],
+    "notes": [
+      "Added the missing porch deck and four slender vertical posts supporting the front porch roof as seen in the photograph."
+    ]
+  }
+}

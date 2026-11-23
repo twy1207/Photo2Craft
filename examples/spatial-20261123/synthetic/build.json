@@ -1,0 +1,15 @@
+{
+  "extent": 48,
+  "plan_sha256": "341437fff0e61e0138abd242008421b72d5ce1280e7a7271ee1b259c3f8f9dae",
+  "photo_sha256": null,
+  "source_sha256": {
+    "model.py": "6faf734f258351e331a4e3154a81b725dae6b9318e82d7e1cf4bd66166106c16",
+    "compile.py": "fb0ff866e00f66df8cf07f60763e4e596befe3cacb7c759c8655ed3575773e8f",
+    "render.py": "9565319d82b82317a857bea0a38e1b653142f5f6ecfdf999a4a8ecafc3435316",
+    "spatial.py": "19d3d0a42153fc79cd6fe4a2c0aea01a2867a60b5698c98e241089124fb6ef2a"
+  },
+  "dependencies": {
+    "Pillow": "13.0.0",
+    "pydantic": "2.14.3"
+  }
+}

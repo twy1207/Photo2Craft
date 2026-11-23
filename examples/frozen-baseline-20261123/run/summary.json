@@ -1,0 +1,14 @@
+{
+  "block_count": 7544,
+  "size": [
+    33,
+    36,
+    48
+  ],
+  "warnings": [
+    "front_porch_roof: roof lost at this resolution",
+    "front_windows: 48/64 face cells painted (absent/occluded/overlapping)",
+    "porch_deck: plain box clipped to frozen baseline bounds"
+  ],
+  "note": "Structural diagnostics, not photo similarity scores."
+}

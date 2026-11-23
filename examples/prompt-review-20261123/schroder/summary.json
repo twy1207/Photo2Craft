@@ -1,0 +1,13 @@
+{
+  "block_count": 7892,
+  "size": [
+    35,
+    21,
+    48
+  ],
+  "warnings": [
+    "front_window_main: 15/48 face cells painted (absent/occluded/overlapping)",
+    "analysis marked this building approximate"
+  ],
+  "note": "Structural diagnostics, not photo similarity scores."
+}

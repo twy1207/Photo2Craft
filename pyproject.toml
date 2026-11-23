@@ -19,7 +19,7 @@ photo2craft = "photo2craft.cli:main"
 include = ["photo2craft*"]
 
 [tool.setuptools.package-data]
-photo2craft = ["prompt.txt"]
+photo2craft = ["prompt.txt", "attachment_prompt.txt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,0 +1,15 @@
+{
+  "baseline": "examples/schroder/run-01",
+  "matching_fields": {
+    "model_requested": true,
+    "sent_photo_sha256": true,
+    "generation_config": true,
+    "requirements": true
+  },
+  "prompt_changed": true,
+  "input_photo": "examples/schroder/run-01/input.jpg",
+  "render_extent": 48,
+  "overview_yaw": -35,
+  "overview_elevation": 18,
+  "note": "Original response and plan retained; candidate prompt has multiple simultaneous edits."
+}

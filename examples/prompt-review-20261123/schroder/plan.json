@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "title": "Modernist Villa with Cantilevers",
+  "view": "front_left",
+  "suitability": "approximate",
+  "observations": [
+    "The front facade displays an asymmetrical composition of cubic volumes in gray and white concrete.",
+    "Prominent vertical white panel accent on the right center and a yellow vertical post on the left.",
+    "Flat roofs with overhanging slabs and terraces with black railings.",
+    "Multiple rectangular windows of various sizes, some with dark frames, and a recessed ground floor entrance on the left."
+  ],
+  "assumptions": [
+    "Rear and occluded side volumes are inferred as simple rectangular extensions maintaining the modernist style.",
+    "Internal floors and room layouts are approximated as solid volumetric shells."
+  ],
+  "volumes": [
+    {
+      "id": "main_body",
+      "parent": null,
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size": [
+        1.0,
+        0.8,
+        1.2
+      ],
+      "shell": true,
+      "material": "gray_concrete",
+      "roof": {
+        "kind": "flat",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "white_concrete"
+      },
+      "evidence": "Main central and left building mass visible in center-left foreground.",
+      "inferred": false
+    },
+    {
+      "id": "right_wing",
+      "parent": "main_body",
+      "offset": [
+        0.7,
+        0.0,
+        -0.2
+      ],
+      "size": [
+        0.6,
+        0.75,
+        1.1
+      ],
+      "shell": true,
+      "material": "light_gray_concrete",
+      "roof": {
+        "kind": "flat",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "white_concrete"
+      },
+      "evidence": "Right side secondary volume with cantilevered roof.",
+      "inferred": false
+    },
+    {
+      "id": "white_vertical_slab",
+      "parent": "main_body",
+      "offset": [
+        0.45,
+        0.0,
+        -0.1
+      ],
+      "size": [
+        0.15,
+        0.9,
+        0.3
+      ],
+      "shell": false,
+      "material": "white_concrete",
+      "roof": {
+        "kind": "none",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "white_concrete"
+      },
+      "evidence": "Prominent vertical white facade element dividing the composition.",
+      "inferred": false
+    },
+    {
+      "id": "front_balcony_box",
+      "parent": "main_body",
+      "offset": [
+        0.1,
+        0.4,
+        -0.2
+      ],
+      "size": [
+        0.4,
+        0.25,
+        0.3
+      ],
+      "shell": false,
+      "material": "white_concrete",
+      "roof": {
+        "kind": "none",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "white_concrete"
+      },
+      "evidence": "White projecting balcony railing/panel on the front.",
+      "inferred": false
+    },
+    {
+      "id": "roof_canopy_right",
+      "parent": "right_wing",
+      "offset": [
+        -0.1,
+        1.0,
+        -0.3
+      ],
+      "size": [
+        1.2,
+        0.1,
+        1.4
+      ],
+      "shell": false,
+      "material": "white_concrete",
+      "roof": {
+        "kind": "none",
+        "rise": 0.0,
+        "ridge_axis": "z",
+        "material": "white_concrete"
+      },
+      "evidence": "Large flat overhanging roof slab above the right terrace.",
+      "inferred": false
+    }
+  ],
+  "details": [
+    {
+      "id": "front_window_main",
+      "volume": "main_body",
+      "face": "front",
+      "u": 0.35,
+      "v": 0.5,
+      "width": 0.3,
+      "height": 0.3,
+      "material": "glass",
+      "frame": "black_concrete",
+      "evidence": "Large multi-pane window on upper center-left facade.",
+      "inferred": false
+    },
+    {
+      "id": "right_upper_window",
+      "volume": "right_wing",
+      "face": "front",
+      "u": 0.1,
+      "v": 0.55,
+      "width": 0.4,
+      "height": 0.25,
+      "material": "glass",
+      "frame": "black_concrete",
+      "evidence": "Upper floor window on the right wing under the canopy.",
+      "inferred": false
+    },
+    {
+      "id": "right_lower_window",
+      "volume": "right_wing",
+      "face": "front",
+      "u": 0.1,
+      "v": 0.1,
+      "width": 0.5,
+      "height": 0.2,
+      "material": "glass",
+      "frame": "black_concrete",
+      "evidence": "Ground floor strip window on the right wing.",
+      "inferred": false
+    }
+  ]
+}

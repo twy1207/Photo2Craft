@@ -5,8 +5,8 @@ import importlib.metadata
 import json
 from pathlib import Path
 
-from .compile import compile_plan
 from .model import parse_plan_json
+from .pipeline import compile_document
 from .render import write_comparison
 
 
@@ -16,24 +16,7 @@ def save_json(path: Path, value):
 
 def build(plan_path: Path, out: Path, photo: Path | None, extent: int):
     original = parse_plan_json(plan_path.read_text(encoding="utf-8"))
-    if original.schema_version in (2, 3):
-        from .spatial import resolve_spatial, check_quantized_relations
-        relations = original.spatial_plan() if original.schema_version == 3 else original
-        baseline = original.baseline if original.schema_version == 3 else None
-        plan, resolution = resolve_spatial(relations, baseline)
-    else:
-        plan, resolution = original, None
-    result = compile_plan(plan, extent)
-    if resolution is not None:
-        result.warnings.extend(resolution['warnings'])
-        check_quantized_relations(relations, result)
-        if original.schema_version == 3:
-            frozen = compile_plan(original.baseline, extent)
-            if any(result.boxes[vid] != box for vid, box in frozen.boxes.items()):
-                raise ValueError('frozen baseline changed after block rounding')
-            if any(result.blocks.get(pos) != material for pos, material in frozen.blocks.items()):
-                raise ValueError('addition overwrote a frozen baseline block')
-            resolution['baseline_blocks_unchanged'] = True
+    plan, result, resolution = compile_document(original, extent)
     out.mkdir(parents=True, exist_ok=True)
     if resolution is not None:
         save_json(out / 'resolved-plan.json', plan.model_dump(mode='json'))
@@ -51,7 +34,7 @@ def build(plan_path: Path, out: Path, photo: Path | None, extent: int):
         "plan_sha256": hashlib.sha256(plan_path.read_bytes()).hexdigest(),
         "photo_sha256": hashlib.sha256(photo.read_bytes()).hexdigest() if photo else None,
         "source_sha256": {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
-                          for name in ("model.py", "compile.py", "render.py") + (("spatial.py",) if resolution is not None else ())},
+                          for name in ("model.py", "compile.py", "pipeline.py", "render.py") + (("spatial.py",) if resolution is not None else ())},
         "dependencies": {name: importlib.metadata.version(name) for name in ("Pillow", "pydantic")},
     })
     print(f"Built {len(result.blocks)} blocks; {len(result.warnings)} warnings. Output: {out}")
@@ -83,9 +66,15 @@ def main():
     r.add_argument("--out", type=Path, required=True)
     r.add_argument("--extent", type=int, default=48)
     r.add_argument('--baseline', type=Path, help='v1 baseline for replaying an attachment proposal response')
+    s = sub.add_parser('serve', help='open the local 3D example viewer without an API key')
+    s.add_argument('--port', type=int, default=8000)
+    s.add_argument('--examples', type=Path, default=Path('examples'))
     args = parser.parse_args()
     try:
-        if args.command == 'analyze':
+        if args.command == 'serve':
+            from .server import serve
+            serve(args.examples, args.port)
+        elif args.command == 'analyze':
             from .analyze import analyze
             plan = analyze(args.photo, args.out, args.model, args.requirements)
             build(plan, args.out, args.out/'input.jpg', args.extent)

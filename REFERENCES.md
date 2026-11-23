@@ -1,6 +1,6 @@
 # 출처와 라이선스
 
-확인일: 2026-11-22. 외부 프로젝트 코드를 복사하지 않고 표현 방식과 실험 설계의 참고 자료로 읽었다. 이 파일은 법률적 판단이나 전체 의존성 감사가 아니다.
+확인일: 2026-11-22, 웹 뷰어 항목 추가 2026-11-23. 접근법 참고 프로젝트 코드는 복사하지 않았다. 라이브러리는 아래와 같이 사용하며 Three.js의 배포 파일 일부는 라이선스와 함께 동봉한다. 이 파일은 법률적 판단이나 전체 의존성 감사가 아니다.
 
 ## 직접 사용
 
@@ -9,7 +9,10 @@
 | Pillow 13.0.0 | 사진 처리와 비교 PNG | [Pillow](https://github.com/python-pillow/Pillow), [MIT-CMU](https://github.com/python-pillow/Pillow/blob/main/LICENSE) |
 | Pydantic 2.14.3 | 계획 구조와 관계 검증 | [Pydantic](https://github.com/pydantic/pydantic), [MIT](https://github.com/pydantic/pydantic/blob/main/LICENSE) |
 | pytest 9.2.0 | 최소 회귀 검증, 개발 의존성 | [pytest](https://github.com/pytest-dev/pytest), MIT |
+| Three.js 0.187.0 | 브라우저의 블록 3D 렌더링·OrbitControls | [공식 저장소](https://github.com/mrdoob/three.js), MIT. 원문 [LICENSE](photo2craft/web/vendor/three/LICENSE) 동봉 |
 | Gemini API | 사진에서 계획 생성 | [구조화 출력](https://aistudio.google.com/docs/structured-output), [모델](https://aistudio.google.com/docs/models/gemini-3.8-flash), [한도](https://aistudio.google.com/docs/rate-limits), [약관](https://ai.google.dev/gemini-api/terms) |
+
+Three.js는 [npm 배포본](https://registry.npmjs.org/three/-/three-0.187.0.tgz)의 SHA-512 무결성을 확인한 뒤 `three.module.js`, `three.core.js`, `OrbitControls.js`, `LICENSE`만 변경 없이 복사했다. 버전·URL·파일별 SHA-256은 [provenance.json](photo2craft/web/vendor/three/provenance.json)에 있다. 실행 중 CDN에 접속하지 않는다. 구현 참고: [공식 문서](https://threejs.org/docs/), InstancedMesh와 OrbitControls. Python 서버는 표준 라이브러리를 사용하며 새 Python 의존성은 추가하지 않았다.
 
 ## 사진
 

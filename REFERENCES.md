@@ -1,6 +1,6 @@
 # 출처와 라이선스
 
-확인일: 2026-11-22, 웹 뷰어 항목 추가 2026-11-23. 접근법 참고 프로젝트 코드는 복사하지 않았다. 라이브러리는 아래와 같이 사용하며 Three.js의 배포 파일 일부는 라이선스와 함께 동봉한다. 이 파일은 법률적 판단이나 전체 의존성 감사가 아니다.
+최초 확인 2026-11-22. 웹 뷰어 출처는 2026-11-23, 메시·배경 제거 실험 출처는 2026-11-25에 추가했다. Three.js 배포 파일 일부를 라이선스와 함께 동봉한다.
 
 ## 직접 사용
 
@@ -13,6 +13,14 @@
 | Gemini API | 사진에서 계획 생성 | [구조화 출력](https://aistudio.google.com/docs/structured-output), [모델](https://aistudio.google.com/docs/models/gemini-3.8-flash), [한도](https://aistudio.google.com/docs/rate-limits), [약관](https://ai.google.dev/gemini-api/terms) |
 
 Three.js는 [npm 배포본](https://registry.npmjs.org/three/-/three-0.187.0.tgz)의 SHA-512 무결성을 확인한 뒤 `three.module.js`, `three.core.js`, `OrbitControls.js`, `LICENSE`만 변경 없이 복사했다. 버전·URL·파일별 SHA-256은 [provenance.json](photo2craft/web/vendor/three/provenance.json)에 있다. 실행 중 CDN에 접속하지 않는다. 구현 참고: [공식 문서](https://threejs.org/docs/), InstancedMesh와 OrbitControls. Python 서버는 표준 라이브러리를 사용하며 새 Python 의존성은 추가하지 않았다.
+
+## 별도 실험에서 사용
+
+| 항목 | 역할 | 출처·라이선스 |
+|---|---|---|
+| TRELLIS.2 | 공식 Space에서 입력 전처리, 3D 생성과 GLB 추출 | [Space](https://huggingface.co/spaces/microsoft/TRELLIS.2), [코드 라이선스 MIT](https://github.com/microsoft/TRELLIS.2/blob/main/LICENSE), [모델 카드 MIT](https://huggingface.co/microsoft/TRELLIS.2-4B) |
+| trimesh 5.2.2 | 로컬 실험의 GLB 삼각형 읽기 | [공식 저장소와 MIT 라이선스](https://github.com/mikedh/trimesh) |
+| rembg 2.0.88 | 슈뢰더 사진의 로컬 배경 제거 비교 | [rembg MIT](https://github.com/danielgatis/rembg/blob/main/LICENSE.txt), [U²-Net 원본 코드 Apache-2.0](https://github.com/xuebinqin/U-2-Net/blob/master/LICENSE), [BiRefNet Lite 모델 카드 MIT](https://huggingface.co/ZhengPeng7/BiRefNet_lite) |
 
 ## 사진
 

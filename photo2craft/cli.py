@@ -8,6 +8,7 @@ from pathlib import Path
 from .model import parse_plan_json
 from .pipeline import compile_document
 from .render import write_comparison
+from .trellis import DEFAULT_RESOLUTION, RESOLUTIONS
 
 
 def save_json(path: Path, value):
@@ -69,11 +70,24 @@ def main():
     s = sub.add_parser('serve', help='open the local 3D example viewer without an API key')
     s.add_argument('--port', type=int, default=8000)
     s.add_argument('--examples', type=Path, default=Path('examples'))
+    m = sub.add_parser('generate-mesh', help='generate a GLB and Clay views with TRELLIS.2 ZeroGPU')
+    m.add_argument('photo', type=Path)
+    m.add_argument('--out', type=Path, required=True)
+    m.add_argument('--token-config', type=Path, help='read aliases from an existing Hugging Face token config')
+    m.add_argument('--resolution', choices=RESOLUTIONS, default=DEFAULT_RESOLUTION)
+    auth = sub.add_parser('trellis-auth', help='save Hugging Face tokens in a local file')
+    auth.add_argument('--list', dest='list_only', action='store_true', help='show how many tokens are saved')
     args = parser.parse_args()
     try:
         if args.command == 'serve':
             from .server import serve
             serve(args.examples, args.port)
+        elif args.command == 'generate-mesh':
+            from .trellis import generate_mesh
+            generate_mesh(args.photo, args.out, args.token_config, resolution=args.resolution)
+        elif args.command == 'trellis-auth':
+            from .trellis_auth import manage_tokens
+            manage_tokens(list_only=args.list_only)
         elif args.command == 'analyze':
             from .analyze import analyze
             plan = analyze(args.photo, args.out, args.model, args.requirements)

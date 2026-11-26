@@ -1,9 +1,0 @@
-{
-  "path_base": "repository root",
-  "files": {
-    "prompt.txt": {
-      "path": "examples/prompt-review-20261123/gothic/prompt.txt",
-      "sha256": "cfbd5505d49b5b81c7c15792e0cf2f26ef50bff61cfbc3648c0de6c7cb66d19f"
-    }
-  }
-}

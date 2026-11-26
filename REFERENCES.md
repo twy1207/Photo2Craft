@@ -11,15 +11,18 @@
 | Gradio Client 2.7.2 | TRELLIS.2 전처리·생성·추출 세션과 파일 다운로드 | [Gradio Python Client](https://www.gradio.app/docs/python-client/client), Apache-2.0 |
 | Hugging Face Hub 2.4.0 | 로컬 토큰과 ZeroGPU 무료 잔량 조회 | [공식 Python 클라이언트](https://github.com/huggingface/huggingface_hub), Apache-2.0 |
 | TRELLIS.2 Space | 사진 전처리, 메시 생성, Clay 미리보기와 GLB 추출 | [Space 소스](https://huggingface.co/spaces/microsoft/TRELLIS.2/blob/main/app.py), [코드 라이선스 MIT](https://github.com/microsoft/TRELLIS.2/blob/main/LICENSE), [모델 카드 MIT](https://huggingface.co/microsoft/TRELLIS.2-4B) |
+| NumPy 2.5.5 | 삼각형과 블록의 교차 계산, Clay 실루엣 비교 | [공식 저장소](https://github.com/numpy/numpy), [BSD-3-Clause](https://github.com/numpy/numpy/blob/main/LICENSE.txt) |
+| trimesh 5.2.2 | GLB 삼각형과 장면 좌표 읽기 | [공식 저장소와 MIT 라이선스](https://github.com/mikedh/trimesh) |
 
 Three.js 파일과 MIT 라이선스는 npm 배포본에서 가져왔다. 버전, 원본 URL과 파일별 해시는 동봉된 기록에서 확인할 수 있다. [Three.js 출처 기록](photo2craft/web/vendor/three/provenance.json)
+
+Clay 시점을 맞출 때 공식 TRELLIS.2 코드의 카메라 배치와 GLB 축 변환을 참고했다. [카메라 배치](https://github.com/microsoft/TRELLIS.2/blob/main/trellis2/utils/render_utils.py#L93-L99) · [GLB 축 변환](https://github.com/microsoft/TRELLIS.2/blob/main/o-voxel/o_voxel/postprocess.py#L297-L306)
 
 ## 실험 도구
 
 | 항목 | 역할 | 출처·라이선스 |
 |---|---|---|
 | Gemini API | 동봉 예제의 건축 계획을 만든 초기 실험 | [구조화 출력](https://aistudio.google.com/docs/structured-output), [약관](https://ai.google.dev/gemini-api/terms) |
-| trimesh 5.2.2 | 로컬 실험의 GLB 삼각형 읽기 | [공식 저장소와 MIT 라이선스](https://github.com/mikedh/trimesh) |
 | rembg 2.0.88 | 슈뢰더 사진의 로컬 배경 제거 비교 | [rembg MIT](https://github.com/danielgatis/rembg/blob/main/LICENSE.txt), [U²-Net 원본 코드 Apache-2.0](https://github.com/xuebinqin/U-2-Net/blob/master/LICENSE), [BiRefNet Lite 모델 카드 MIT](https://huggingface.co/ZhengPeng7/BiRefNet_lite) |
 
 ## 사진

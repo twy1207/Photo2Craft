@@ -70,6 +70,13 @@ def main():
     s = sub.add_parser('serve', help='open the local 3D example viewer without an API key')
     s.add_argument('--port', type=int, default=8000)
     s.add_argument('--examples', type=Path, default=Path('examples'))
+    v = sub.add_parser('voxelize', help='turn a GLB into blocks and compare with optional Clay views')
+    v.add_argument('mesh', type=Path)
+    v.add_argument('--out', type=Path, required=True)
+    v.add_argument('--photo', type=Path)
+    v.add_argument('--clay', type=Path)
+    v.add_argument('--extent', type=int, default=48)
+    v.add_argument('--front-yaw', type=float, default=0)
     m = sub.add_parser('generate-mesh', help='generate a GLB and Clay views with TRELLIS.2 ZeroGPU')
     m.add_argument('photo', type=Path)
     m.add_argument('--out', type=Path, required=True)
@@ -82,6 +89,13 @@ def main():
         if args.command == 'serve':
             from .server import serve
             serve(args.examples, args.port)
+        elif args.command == 'voxelize':
+            try:
+                from .mesh import write_review
+                write_review(args.mesh, args.out, photo=args.photo, clay=args.clay,
+                             extent=args.extent, front_yaw=args.front_yaw)
+            except ImportError:
+                raise ValueError('GLB 변환 의존성을 설치해 주세요 (pip install -e ".[mesh]").') from None
         elif args.command == 'generate-mesh':
             from .trellis import generate_mesh
             generate_mesh(args.photo, args.out, args.token_config, resolution=args.resolution)

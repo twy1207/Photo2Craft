@@ -70,6 +70,7 @@ def main():
     s = sub.add_parser('serve', help='open the local 3D example viewer without an API key')
     s.add_argument('--port', type=int, default=8000)
     s.add_argument('--examples', type=Path, default=Path('examples'))
+    s.add_argument('--mesh-result', type=Path, help='add the output directory from voxelize to the viewer')
     v = sub.add_parser('voxelize', help='turn a GLB into blocks and compare with optional Clay views')
     v.add_argument('mesh', type=Path)
     v.add_argument('--out', type=Path, required=True)
@@ -88,7 +89,7 @@ def main():
     try:
         if args.command == 'serve':
             from .server import serve
-            serve(args.examples, args.port)
+            serve(args.examples, args.port, mesh_result=args.mesh_result)
         elif args.command == 'voxelize':
             try:
                 from .mesh import write_review

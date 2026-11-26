@@ -4,6 +4,8 @@ import { OrbitControls } from 'three/addons/OrbitControls.js';
 const $ = (id) => document.getElementById(id);
 const stage = $('stage');
 const canvas = $('model');
+const reference = $('reference');
+const extent = $('extent');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -14,6 +16,9 @@ const light = new THREE.DirectionalLight(0xffffff, 2.4);
 light.position.set(-40, 80, -50);
 scene.add(light);
 const camera = new THREE.OrthographicCamera(-40, 40, 40, -40, .1, 2000);
+const clayCamera = new THREE.PerspectiveCamera(36, 1, .1, 2000);
+const orbitBackground = scene.background;
+const clayBackground = new THREE.Color(0x000000);
 const controls = new OrbitControls(camera, canvas);
 controls.listenToKeyEvents(canvas);
 controls.minZoom = .4;
@@ -24,12 +29,21 @@ const grid = new THREE.GridHelper(160, 40, 0xbdcad4, 0xd5e0e7);
 grid.position.y = -.06;
 scene.add(grid);
 
-let mesh, current, catalog;
+let mesh, current, catalog, activeClay;
 let span = 80, distance = 150, generation = 0, pending;
 const target = new THREE.Vector3();
 const viewButtons = [...document.querySelectorAll('[data-view]')];
 
-function draw() { renderer.render(scene, camera); }
+function draw() {
+  const width = stage.clientWidth, height = stage.clientHeight;
+  if (!width || !height) return;
+  const square = Math.max(1, Math.min(width, height) - 28);
+  scene.background = activeClay ? clayBackground : orbitBackground;
+  grid.visible = !activeClay;
+  if (activeClay) renderer.setViewport((width - square) / 2, (height - square) / 2, square, square);
+  else renderer.setViewport(0, 0, width, height);
+  renderer.render(scene, activeClay ? clayCamera : camera);
+}
 controls.addEventListener('change', draw);
 function clearViewSelection() { viewButtons.forEach((b) => b.setAttribute('aria-pressed', 'false')); }
 controls.addEventListener('start', clearViewSelection);
@@ -70,7 +84,64 @@ function setView(name) {
   viewButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.view === name)));
   draw();
 }
-viewButtons.forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
+viewButtons.forEach((button) => button.addEventListener('click', () => {
+  if (activeClay) {
+    reference.value = 'photo';
+    showReference();
+  }
+  setView(button.dataset.view);
+}));
+
+function showReference() {
+  const wasClay = activeClay;
+  activeClay = current.clay?.find((view) => String(view.index) === reference.value);
+  const photo = $('photo');
+  const credit = $('credit');
+  const url = activeClay?.url ?? current.photo;
+  photo.hidden = !url;
+  $('reference-empty').hidden = Boolean(url);
+  if (url) photo.src = url;
+  else photo.removeAttribute('src');
+  $('photo-title').textContent = activeClay ? 'Clay 미리보기' : '원본 사진';
+  photo.alt = activeClay ? `Clay 시점 ${activeClay.index + 1}` : `${current.title} 원본 사진`;
+  credit.replaceChildren();
+  stage.dataset.clay = String(Boolean(activeClay));
+  controls.enabled = !activeClay;
+  $('gesture-help').textContent = activeClay
+    ? 'Clay와 같은 카메라입니다. 시점 버튼을 누르면 자유 회전으로 돌아갑니다.'
+    : '드래그 회전 · 휠 확대 · 오른쪽 드래그·방향키 이동';
+
+  if (activeClay) {
+    const { target: center, radius, fov } = current.clay_camera;
+    const a = THREE.MathUtils.degToRad(activeClay.yaw), b = THREE.MathUtils.degToRad(activeClay.elevation);
+    const look = new THREE.Vector3(...center);
+    clayCamera.fov = fov;
+    clayCamera.position.copy(look).addScaledVector(
+      new THREE.Vector3(Math.sin(a) * Math.cos(b), Math.sin(b), Math.cos(a) * Math.cos(b)), radius,
+    );
+    clayCamera.lookAt(look);
+    clayCamera.updateProjectionMatrix();
+    clearViewSelection();
+    const percent = (value) => `${(100 * value).toFixed(1)}%`;
+    credit.textContent = activeClay.matched
+      ? `GLB와 Clay 윤곽 일치 ${percent(activeClay.alignment)}`
+      : '윤곽 정렬이 낮아 이 시점을 보정에서 제외했습니다.';
+    if (activeClay.before_iou != null) {
+      credit.textContent += ` · 블록 ${percent(activeClay.before_iou)} → ${percent(activeClay.after_iou)}`;
+    }
+  } else if (current.credit) {
+    const link = document.createElement('a');
+    link.textContent = '사진 출처';
+    link.href = current.credit.page;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    credit.append(`${current.credit.author} · ${current.credit.license} `, link);
+  }
+  if (wasClay && !activeClay) setView('reset');
+  else draw();
+}
+
+reference.addEventListener('change', showReference);
 
 function renderBuilding(data) {
   if (mesh) {
@@ -132,20 +203,25 @@ async function loadExample(id) {
   try {
     const data = await getJSON('/api/examples/' + encodeURIComponent(id), pending.signal);
     if (request !== generation) return;
+    const selectedReference = current?.building === data.building && activeClay ? String(activeClay.index) : 'photo';
+    const clayViews = data.clay ?? [];
+    const referenceValues = ['photo', ...clayViews.map((view) => String(view.index))];
     current = data;
+    activeClay = undefined;
+    controls.enabled = true;
     renderBuilding(data);
-    $('photo').src = data.photo;
-    $('photo').alt = `${data.title} 원본 사진`;
-    $('photo').hidden = false;
+    if (reference.length !== referenceValues.length || referenceValues.some((value, i) => reference.options[i].value !== value)) {
+      reference.replaceChildren(new Option('원본 사진', 'photo'), ...clayViews.map(
+        (view) => new Option(`Clay ${view.index + 1}`, String(view.index)),
+      ));
+    }
+    reference.hidden = !clayViews.length;
+    reference.value = referenceValues.includes(selectedReference) ? selectedReference : 'photo';
+    showReference();
     $('photo-name').textContent = data.title;
+    $('photo-name').hidden = !reference.hidden;
     $('variant-label').textContent = data.variant;
     $('summary').textContent = `${data.size.join(' × ')} 블록 · ${data.block_count.toLocaleString('ko-KR')}개`;
-    const link = document.createElement('a');
-    link.textContent = '사진 출처';
-    link.href = data.credit.page;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    $('credit').replaceChildren(document.createTextNode(`${data.credit.author} · ${data.credit.license} `), link);
     $('notes').replaceChildren(...data.notes.map((text) => {
       const li = document.createElement('li'); li.textContent = text; return li;
     }));
@@ -160,8 +236,7 @@ async function loadExample(id) {
   }
 }
 
-function selectBuilding(id) {
-  const variants = catalog.filter((item) => item.building === id);
+function showVariants(variants, preferred) {
   $('variants').replaceChildren(...variants.map((variant) => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -171,11 +246,26 @@ function selectBuilding(id) {
     button.addEventListener('click', () => loadExample(variant.id));
     return button;
   }));
-  loadExample(variants[0].id);
+  const initial = variants.find((variant) => variant.variant === preferred) ?? variants[0];
+  loadExample(initial.id);
+}
+
+function selectBuilding(id) {
+  const entries = catalog.filter((item) => item.building === id);
+  const sizes = [...new Set(entries.map((entry) => entry.extent))].filter(Number.isInteger).sort((a, b) => a - b);
+  $('extent-control').hidden = sizes.length < 2;
+  extent.replaceChildren(...sizes.map((size) => new Option(`${size}블록`, String(size))));
+  extent.value = String(entries[0].extent);
+  showVariants(entries.filter((entry) => entry.extent === entries[0].extent));
 }
 $('building').addEventListener('change', (event) => selectBuilding(event.target.value));
+extent.addEventListener('change', () => {
+  const building = $('building').value;
+  const entries = catalog.filter((entry) => entry.building === building && entry.extent === Number(extent.value));
+  showVariants(entries, current?.building === building ? current.variant : undefined);
+});
 $('photo').addEventListener('error', () => {
-  $('photo').alt = '원본 사진을 불러오지 못했습니다.';
+  $('photo').alt = '비교 이미지를 불러오지 못했습니다.';
 });
 
 try {

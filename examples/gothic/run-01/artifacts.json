@@ -1,9 +1,0 @@
-{
-  "path_base": "repository root",
-  "files": {
-    "input.jpg": {
-      "path": "examples/gothic/run-04/input.jpg",
-      "sha256": "540b5c587da831f79b2eee1e46d98e035cee475267d13897ba9c4df616650011"
-    }
-  }
-}

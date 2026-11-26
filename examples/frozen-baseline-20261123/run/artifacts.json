@@ -1,9 +1,0 @@
-{
-  "path_base": "repository root",
-  "files": {
-    "baseline.json": {
-      "path": "examples/gothic/run-04/plan.json",
-      "sha256": "1cbc86250e8cfc2e75b84da5d993ee303904e516a51dd2fc417af58d093953bf"
-    }
-  }
-}

@@ -12,14 +12,17 @@ import pytest
 from photo2craft import trellis
 
 
-@pytest.mark.parametrize("extraction_fails", [False, True])
-def test_generate_mesh_preserves_results(tmp_path, monkeypatch, extraction_fails):
+@pytest.mark.parametrize("extraction_fails, first_quota", [(False, 59), (True, 59), (False, 90)])
+def test_generate_mesh_preserves_results(tmp_path, monkeypatch, extraction_fails, first_quota):
     photo = tmp_path / "input.png"
     Image.new("RGB", (2, 2)).save(photo)
     output = tmp_path / "result"
     config = tmp_path / "tokens.json"
     config.write_text('{"tokens": ["first", "second", "third"]}', encoding="utf-8")
     jobs, quota_requests = [], []
+    expected_jobs = list(trellis.ENDPOINTS)
+    if first_quota >= 60:
+        expected_jobs.insert(1, "/image_to_3d")
     image_file = BytesIO()
     Image.new("RGB", (2, 2), "gray").save(image_file, format="JPEG")
     jpeg = image_file.getvalue()
@@ -37,13 +40,14 @@ def test_generate_mesh_preserves_results(tmp_path, monkeypatch, extraction_fails
 
         def get_zero_gpu_quota(self, *, token):
             quota_requests.append(token)
-            remaining = 59 if token == "token-1" else 80 - 20 * quota_requests.count(token)
+            remaining = first_quota if token == "token-1" else 80 - 20 * quota_requests.count(token)
             return SimpleNamespace(base=300, remaining=remaining, resets_at=None, overquota_used=None)
 
     class FakeSpace:
         def __init__(self, url, *, token, download_files, **_):
             assert url == trellis.SPACE_URL
-            assert token == "token-2"
+            assert token in ("token-1", "token-2")
+            self.token = token
             self.downloads = download_files
 
         def view_api(self, **_):
@@ -60,10 +64,11 @@ def test_generate_mesh_preserves_results(tmp_path, monkeypatch, extraction_fails
                 prepared.write_bytes(photo.read_bytes())
                 return str(prepared)
             if api_name == "/image_to_3d":
-                assert jobs == ["/preprocess_image", "/image_to_3d"]
-                assert args[:3] == (str(self.downloads / "prepared.png"), 0, "512")
+                assert args[:3] == (str(self.downloads.parent / "prepared.png"), 0, "512")
+                if self.token == "token-1":
+                    raise RuntimeError("You have exceeded your free ZeroGPU quota (120s requested vs. 90s left)")
                 return gallery
-            assert jobs == list(trellis.ENDPOINTS)
+            assert jobs == expected_jobs
             assert args == (100_000, 1024)
             if extraction_fails:
                 raise RuntimeError("The upstream Gradio app has not enabled verbose error reporting")
@@ -103,7 +108,7 @@ def test_generate_mesh_preserves_results(tmp_path, monkeypatch, extraction_fails
         trellis.generate_mesh(photo, output, output / "no-config.json")
     with pytest.raises(ValueError, match="새 --out 경로"):
         trellis.generate_mesh(photo, output, config, resolution="1024")
-    assert jobs == list(trellis.ENDPOINTS)
+    assert jobs == expected_jobs
     assert quota_requests == ["token-1", "token-2", "token-2", "token-2"]
 
 
@@ -132,6 +137,7 @@ def test_all_accounts_exhausted_does_not_call_space(capsys):
 
 @pytest.mark.parametrize("message, reason", [
     ("You have exceeded your GPU quota (0s left vs. 120s requested)", "ZeroGPU 잔량 부족"),
+    ("You have exceeded your free ZeroGPU quota (120s requested vs. 90s left)", "ZeroGPU 잔량 부족"),
     ("You have exceeded your ZeroGPU runs limit.", "ZeroGPU 실행 횟수 한도"),
 ])
 def test_quota_rejection_only_allows_switching_before_generation(message, reason):

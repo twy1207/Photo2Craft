@@ -140,11 +140,11 @@ def next_result(photo, stage, names, tokens, api, client_type, handle_file, *, r
                 resolution=resolution,
             )
         except QuotaRejected as exc:
-            print(f"{name} - {exc}로 생성이 거절됐습니다.", flush=True)
+            print(f"{name} - 생성 요청이 거절됐습니다 ({exc}).", flush=True)
     hint = ""
     if resets:
         kst = timezone(timedelta(hours=9))
-        hint = f" 확인된 가장 이른 리셋 시각은 {min(resets).astimezone(kst):%Y-%m-%d %H:%M KST}입니다."
+        hint = f" 확인된 GPU 시간 할당량의 가장 이른 리셋은 {min(resets).astimezone(kst):%Y-%m-%d %H:%M KST}입니다."
     raise ValueError(f"지금 사용할 수 있는 무료 ZeroGPU 계정이 없습니다.{hint}")
 
 
@@ -156,7 +156,8 @@ def checked_call(stage, function, *args, **kwargs):
         limit = None
         if "zerogpu runs limit" in message:
             limit = "ZeroGPU 실행 횟수 한도"
-        elif "you have exceeded your gpu quota" in message:
+        elif ("you have exceeded your gpu quota" in message
+              or "you have exceeded your free zerogpu quota" in message):
             limit = "ZeroGPU 잔량 부족"
         if limit is not None:
             if stage in ("전처리", "메시 생성"):
@@ -183,11 +184,15 @@ def run_space(photo, stage, name, token, before, api, client_type, handle_file, 
         if not all(endpoint in schema.get("named_endpoints", {}) for endpoint in ENDPOINTS):
             raise ValueError("공식 TRELLIS.2 API에서 전처리·생성·추출 경로를 확인하지 못했습니다.")
 
-        print("사진 전처리 중", flush=True)
-        prepared = checked_call(
-            "전처리", client.predict, handle_file(str(photo)), api_name=ENDPOINTS[0]
-        )
-        prepared = downloaded_file(prepared, downloads)
+        prepared = stage.parent / "prepared.png"
+        if not prepared.is_file():
+            print("사진 전처리 중", flush=True)
+            result = checked_call(
+                "전처리", client.predict, handle_file(str(photo)), api_name=ENDPOINTS[0]
+            )
+            copyfile(downloaded_file(result, downloads), prepared)
+        else:
+            print("전처리한 사진 재사용", flush=True)
 
         print(f"{resolution} 메시 생성 중", flush=True)
         preview = checked_call(

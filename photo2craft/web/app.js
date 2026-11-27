@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/OrbitControls.js';
+import { createBlockEditor } from './block-editor.js';
 
 const $ = (id) => document.getElementById(id);
 const stage = $('stage');
@@ -28,26 +29,46 @@ controls.maxPolarAngle = Math.PI - .05;
 const grid = new THREE.GridHelper(160, 40, 0xbdcad4, 0xd5e0e7);
 grid.position.y = -.06;
 scene.add(grid);
+const selectionBox = new THREE.Box3Helper(new THREE.Box3(), 0xfa8845);
+selectionBox.visible = false;
+selectionBox.material.depthTest = false;
+selectionBox.renderOrder = 1;
+scene.add(selectionBox);
 
 let mesh, current, catalog, activeClay;
 let span = 80, distance = 150, generation = 0, pending;
 const target = new THREE.Vector3();
 const viewButtons = [...document.querySelectorAll('[data-view]')];
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let press, renderedRows = [];
+const editor = createBlockEditor(() => {
+  renderBlocks(current);
+  updateSummary();
+  draw();
+});
+
+function modelViewport(width, height) {
+  if (!activeClay) return [0, 0, width, height];
+  const square = Math.max(1, Math.min(width, height) - 28);
+  return [(width - square) / 2, (height - square) / 2, square, square];
+}
 
 function draw() {
   const width = stage.clientWidth, height = stage.clientHeight;
   if (!width || !height) return;
-  const square = Math.max(1, Math.min(width, height) - 28);
   scene.background = activeClay ? clayBackground : orbitBackground;
   grid.visible = !activeClay;
-  if (activeClay) renderer.setViewport((width - square) / 2, (height - square) / 2, square, square);
-  else renderer.setViewport(0, 0, width, height);
+  renderer.setViewport(...modelViewport(width, height));
   renderer.render(scene, activeClay ? clayCamera : camera);
 }
 controls.addEventListener('change', draw);
 function clearViewSelection() { viewButtons.forEach((b) => b.setAttribute('aria-pressed', 'false')); }
 controls.addEventListener('start', clearViewSelection);
-canvas.addEventListener('keydown', (event) => { if (event.key.startsWith('Arrow')) clearViewSelection(); });
+canvas.addEventListener('keydown', (event) => {
+  if (event.key.startsWith('Arrow')) clearViewSelection();
+  if (event.key === 'Escape') editor.cancelSelection();
+});
 function resize() {
   const width = stage.clientWidth, height = stage.clientHeight;
   if (!width || !height) return;
@@ -125,10 +146,7 @@ function showReference() {
     const percent = (value) => `${(100 * value).toFixed(1)}%`;
     credit.textContent = activeClay.matched
       ? `GLB와 Clay 윤곽 일치 ${percent(activeClay.alignment)}`
-      : '윤곽 정렬이 낮아 이 시점을 보정에서 제외했습니다.';
-    if (activeClay.before_iou != null) {
-      credit.textContent += ` · 블록 ${percent(activeClay.before_iou)} → ${percent(activeClay.after_iou)}`;
-    }
+      : '윤곽 정렬이 낮아 이 시점을 외곽 보정에서 제외했습니다.';
   } else if (current.credit) {
     const link = document.createElement('a');
     link.textContent = '사진 출처';
@@ -143,7 +161,7 @@ function showReference() {
 
 reference.addEventListener('change', showReference);
 
-function renderBuilding(data) {
+function renderBlocks(data) {
   if (mesh) {
     scene.remove(mesh);
     mesh.geometry.dispose();
@@ -151,25 +169,75 @@ function renderBuilding(data) {
     mesh.dispose();
   }
   const { size, scene: blocks } = data;
-  mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshLambertMaterial(), blocks.blocks.length);
+  const { removed, selected, bounds } = editor;
+  const count = blocks.blocks.length - removed.size;
+  mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshLambertMaterial(), count);
   const matrix = new THREE.Matrix4();
   const colors = blocks.palette.map((name) => new THREE.Color(data.colors[name] || '#f000ff'));
+  const highlight = new THREE.Color('#d74b15');
+  renderedRows = [];
   blocks.blocks.forEach(([x, y, z, palette], index) => {
+    if (removed.has(index)) return;
     // Data: +x is screen-right and +z goes back. Map data z to Three's -z
     // so its right-handed camera matches the CPU preview rather than mirroring it.
     matrix.makeTranslation(x+.5-size[0]/2, y+.5, size[2]/2-z-.5);
-    mesh.setMatrixAt(index, matrix);
-    mesh.setColorAt(index, colors[palette]);
+    mesh.setMatrixAt(renderedRows.length, matrix);
+    mesh.setColorAt(renderedRows.length, selected.has(index) ? highlight : colors[palette]);
+    renderedRows.push(index);
   });
   mesh.instanceMatrix.needsUpdate = true;
   mesh.instanceColor.needsUpdate = true;
   mesh.computeBoundingSphere();
   scene.add(mesh);
+  selectionBox.visible = Boolean(bounds);
+  if (bounds) {
+    const [[x0, y0, z0], [x1, y1, z1]] = bounds;
+    selectionBox.box.min.set(x0-size[0]/2, y0, size[2]/2-z1-1);
+    selectionBox.box.max.set(x1+1-size[0]/2, y1+1, size[2]/2-z0);
+  }
+  stage.dataset.editing = String(editor.active);
+}
+
+canvas.addEventListener('pointerdown', (event) => {
+  if (editor.active && event.isPrimary && event.button === 0) {
+    press = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  }
+});
+function cancelDraggedPress(event) {
+  if (press?.id === event.pointerId && Math.hypot(event.clientX-press.x, event.clientY-press.y) > 5) press = undefined;
+}
+canvas.addEventListener('pointermove', cancelDraggedPress);
+canvas.addEventListener('pointercancel', () => { press = undefined; });
+canvas.addEventListener('pointerup', (event) => {
+  cancelDraggedPress(event);
+  if (press?.id !== event.pointerId) return;
+  press = undefined;
+  if (!editor.active) return;
+  const rect = canvas.getBoundingClientRect();
+  const [x, y, w, h] = modelViewport(rect.width, rect.height);
+  const px = (event.clientX - rect.left - x) / w;
+  const py = (event.clientY - rect.top - y) / h;
+  if (px < 0 || px > 1 || py < 0 || py > 1) return;
+  pointer.set(2 * px - 1, 1 - 2 * py);
+  raycaster.setFromCamera(pointer, activeClay ? clayCamera : camera);
+  const hit = raycaster.intersectObject(mesh, false)[0];
+  if (hit) editor.pick(renderedRows[hit.instanceId]);
+});
+
+function renderBuilding(data) {
+  renderBlocks(data);
+  const { size } = data;
   target.set(0, size[1]/2, 0);
   span = Math.hypot(...size) * 1.12;
   distance = Math.max(...size)*3;
   resize();
   setView('reset');
+}
+
+function updateSummary() {
+  const blockCount = current.block_count - editor.removed.size;
+  $('variant-label').textContent = editor.removed.size ? '편집 결과' : current.variant;
+  $('summary').textContent = `${current.size.join(' × ')} 블록 · ${blockCount.toLocaleString('ko-KR')}개`;
 }
 
 function status(text, error=false) {
@@ -199,6 +267,8 @@ async function loadExample(id) {
   pending = new AbortController();
   stage.setAttribute('aria-busy', 'true');
   viewButtons.forEach((b) => { b.disabled = true; });
+  editor.open();
+  press = undefined;
   status('건축물 불러오는 중…');
   try {
     const data = await getJSON('/api/examples/' + encodeURIComponent(id), pending.signal);
@@ -209,6 +279,7 @@ async function loadExample(id) {
     current = data;
     activeClay = undefined;
     controls.enabled = true;
+    editor.open(data);
     renderBuilding(data);
     if (reference.length !== referenceValues.length || referenceValues.some((value, i) => reference.options[i].value !== value)) {
       reference.replaceChildren(new Option('원본 사진', 'photo'), ...clayViews.map(
@@ -220,8 +291,7 @@ async function loadExample(id) {
     showReference();
     $('photo-name').textContent = data.title;
     $('photo-name').hidden = !reference.hidden;
-    $('variant-label').textContent = data.variant;
-    $('summary').textContent = `${data.size.join(' × ')} 블록 · ${data.block_count.toLocaleString('ko-KR')}개`;
+    updateSummary();
     $('notes').replaceChildren(...data.notes.map((text) => {
       const li = document.createElement('li'); li.textContent = text; return li;
     }));

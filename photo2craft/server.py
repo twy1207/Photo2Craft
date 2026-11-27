@@ -34,7 +34,10 @@ class ExampleCatalog:
         local_meshes = root.parent / '.local' / 'trellis'
         # The first available result for a building is its default size.
         mesh_directories = {
-            'gothic': (('gothic', 'gothic-block-check'),),
+            'gothic': (
+                ('gothic-regen', 'gothic-clay-512-review'),
+                ('gothic', 'gothic-block-check'),
+            ),
             'schroder': (
                 ('schroder-64', 'schroder-block-review-64'),
                 ('schroder', 'schroder-block-review'),
@@ -57,11 +60,17 @@ class ExampleCatalog:
             photo_credit = json.loads((root/credit_file).read_text(encoding='utf-8'))
             credit = {k: photo_credit[k] for k in ('author', 'license', 'page')}
             for result_id, folder in mesh_directories[building]:
-                mesh_directory = local_meshes / folder
-                if (mesh_directory / 'mesh-review.json').is_file():
-                    self.add_mesh_result(mesh_directory, building=building, result_id=result_id,
-                                         title=title, credit=credit)
-                    loaded_meshes.add(building)
+                found = False
+                for suffix in ('-smooth', '-final', '-planar', '-polished', ''):
+                    mesh_directory = local_meshes / f'{folder}{suffix}'
+                    if (mesh_directory / 'mesh-review.json').is_file():
+                        self.add_mesh_result(mesh_directory, building=building, result_id=result_id,
+                                             title=title, credit=credit)
+                        loaded_meshes.add(building)
+                        found = True
+                        break
+                if found and building == 'gothic':
+                    break
             if building in loaded_meshes:
                 continue
 
@@ -118,9 +127,11 @@ class ExampleCatalog:
                 raise ValueError('Clay 시점 번호가 올바르지 않습니다.')
             views.append({**view, 'url': asset(f'clay/view-{index:02d}.jpg', 'image/jpeg')})
 
-        variants = [('after', 'blocks.json', '보정 후' if views else '기본 변환')]
-        if views:
-            variants.insert(0, ('before', 'blocks-before.json', '보정 전'))
+        variants = [('after', 'blocks.json', '기본 변환')]
+        if (root / 'blocks-before.json').is_file():
+            variants = [('after', 'blocks.json', '보정 후'), ('before', 'blocks-before.json', '보정 전')]
+        elif (root / 'blocks-foundation.json').is_file():
+            variants = [('after', 'blocks-foundation.json', '보정 후'), ('before', 'blocks.json', '보정 전')]
         entries = {}
         for version, filename, variant in variants:
             key = f'{result_id}-{version}'
@@ -129,15 +140,18 @@ class ExampleCatalog:
                 raise ValueError('블록 데이터 형식을 확인할 수 없습니다.')
             source = 'TRELLIS.2 GLB' if credit else 'GLB'
             notes = [f'{source}의 표면을 흰색 콘크리트 블록으로 옮겼습니다.']
-            if version == 'after' and views:
-                notes.append(f"Clay {report['aligned_views']}개 시점과 비교해 바깥쪽 블록 {report['removed']}개를 정리했습니다.")
+            correction = report.get('correction')
+            if version == 'after' and correction and any(correction.values()):
+                notes.append(f"자동 보정에서 블록 {correction['added']}개를 추가하고 {correction['removed']}개를 제거했습니다.")
+            if filename == 'blocks-foundation.json':
+                notes.append('벽 아래에 남은 바닥 틈을 메운 실험 결과입니다.')
             entries[key] = {
                 'id': key, 'building': building, 'title': title, 'variant': variant,
                 'view': 'front_right', 'photo': photo, 'credit': credit, 'size': size, 'extent': max(size),
                 'block_count': len(scene['blocks']), 'warning_count': len(scene.get('warnings', [])),
                 'notes': notes, 'scene': scene,
                 'colors': {f'minecraft:{name}': value for name, value in COLORS.items()},
-                'clay': views, 'clay_camera': report.get('camera'),
+                'clay': views, 'clay_camera': report.get('camera'), 'editable': True,
             }
         if first:
             self.entries = {**entries, **self.entries}

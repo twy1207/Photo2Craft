@@ -4,6 +4,8 @@ from math import cos, radians, sin, tan
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
+from .topology import trim_connected
+
 RESOLUTION = 256
 RADIUS = 2
 FOV = 36
@@ -63,7 +65,7 @@ def overlap(target, actual):
     return float(intersection / union) if union else 0.0
 
 
-def review_clay(original, grid, vertices, faces, paths, front_yaw):
+def review_clay(original, grid, vertices, faces, paths, front_yaw, *, protected=None):
     result = {"removed": 0, "views": []}
     if not paths:
         return original, result
@@ -92,11 +94,15 @@ def review_clay(original, grid, vertices, faces, paths, front_yaw):
 
     result["aligned_views"] = len(matched)
     outside = points[votes >= 2]
+    if protected is not None:
+        outside = outside[~protected[tuple(outside.T)]]
     if len(matched) < 2 or not len(outside) or len(outside) == len(points):
         return original, result
 
-    candidate = original.copy()
-    candidate[tuple(outside.T)] = False
+    candidate = trim_connected(original, outside)
+    removed = int(np.count_nonzero(original & ~candidate))
+    if not removed:
+        return original, result
     before_faces = grid.world_points(surface_quads(original))
     after_faces = grid.world_points(surface_quads(candidate))
     before_scores, after_scores, losses = [], [], []
@@ -111,6 +117,6 @@ def review_clay(original, grid, vertices, faces, paths, front_yaw):
         view["before_iou"] = round(before_score, 4)
         view["after_iou"] = round(after_score if accepted else before_score, 4)
     if accepted:
-        result["removed"] = len(outside)
+        result["removed"] = removed
         return candidate, result
     return original, result

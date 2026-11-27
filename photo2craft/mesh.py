@@ -12,6 +12,7 @@ from PIL import Image
 
 from .clay import review_clay
 from .compile import Build
+from .surfaces import exposed_levels, mesh_depths, protect_even_faces, regularize_surfaces
 from .trellis import verify_glb
 
 EPSILON = 1e-8
@@ -125,6 +126,26 @@ def load_geometry(path):
     return mesh.vertices, mesh.faces
 
 
+def polish_blocks(original, positions, vertices, faces, grid, clay_paths, front_yaw):
+    depths = mesh_depths(positions, faces, original.shape)
+    protected = protect_even_faces(original, depths) if clay_paths else None
+    trimmed, clay = review_clay(original, grid, vertices, faces, clay_paths, front_yaw, protected=protected)
+    final, stages = regularize_surfaces(trimmed, depths, contact=exposed_levels(original, 1, 0),
+                                       excluded=original & ~trimmed)
+    return final, {
+        **clay,
+        "correction": {
+            "added": int(np.count_nonzero(final & ~original)),
+            "removed": int(np.count_nonzero(original & ~final)),
+        },
+        "surface": {
+            "stages": stages,
+            "added": int(np.count_nonzero(final & ~trimmed)),
+            "removed": int(np.count_nonzero(trimmed & ~final)),
+        },
+    }
+
+
 def write_review(mesh: Path, out: Path, *, photo=None, clay=None, front_yaw=0, extent=48):
     if out.exists():
         raise ValueError("새 출력 폴더를 지정해 주세요.")
@@ -145,8 +166,9 @@ def write_review(mesh: Path, out: Path, *, photo=None, clay=None, front_yaw=0, e
         if not clay_paths:
             raise ValueError("Clay 폴더에서 비교할 JPEG를 찾지 못했습니다.")
 
-    corrected, comparison = review_clay(original, grid, vertices, faces, clay_paths, front_yaw)
-    final_build = build_from_grid(corrected) if comparison["removed"] else original_build
+    polished, comparison = polish_blocks(original, positions, vertices, faces, grid, clay_paths, front_yaw)
+    changed = any(comparison["correction"].values())
+    final_build = build_from_grid(polished) if changed else original_build
     photo_name = None
     if photo is not None:
         with Image.open(photo) as image:
@@ -171,9 +193,9 @@ def write_review(mesh: Path, out: Path, *, photo=None, clay=None, front_yaw=0, e
     with TemporaryDirectory(prefix=".voxelize-", dir=out.parent) as work:
         stage = Path(work) / "review"
         stage.mkdir()
-        documents = {"blocks.json": final_build.as_dict(), "mesh-review.json": report}
+        documents = {"blocks.json": final_build.as_dict(), "blocks-before.json": original_build.as_dict(),
+                     "mesh-review.json": report}
         if clay_paths:
-            documents["blocks-before.json"] = original_build.as_dict()
             (stage / "clay").mkdir()
             for index, source in clay_paths.items():
                 copyfile(source, stage / "clay" / f"view-{index:02d}.jpg")
